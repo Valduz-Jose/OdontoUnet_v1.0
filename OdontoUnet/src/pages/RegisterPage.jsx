@@ -11,7 +11,7 @@ const {signup, isAuthenticated,errors: registerErrors} = useAuth()
 const navigate =useNavigate()
 // console.log(user);
 useEffect(()=>{
-  if (isAuthenticated) navigate('/tasks');
+  if (isAuthenticated) navigate('/patients');
   
 },[isAuthenticated])
 

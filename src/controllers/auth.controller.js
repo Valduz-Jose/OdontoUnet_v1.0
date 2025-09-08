@@ -2,7 +2,7 @@ import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 import {createAccessToken} from '../libs/jwt.js'
 import jwt from 'jsonwebtoken'
-import {TOKEN_SECRET} from '../config.js'
+import {ADMIN_CREATION_KEY, TOKEN_SECRET} from '../config.js'
 
 export const register = async (req,res)=>{
     const{email,password,username} = req.body
@@ -27,7 +27,7 @@ export const register = async (req,res)=>{
         id: userSaved.id,
         username: userSaved.username,
         email :userSaved.email,
-        // role:userSaved.role,//envio rol
+        role:userSaved.role,//envio rol
         createdAt :userSaved.createdAt,
         updatedAt :userSaved.updatedAt,
     })
@@ -57,7 +57,7 @@ export const login = async (req,res)=>{
         id: userFound.id,
         username: userFound.username,
         email :userFound.email,
-        // role:userFound.role,
+        role:userFound.role,
         createdAt :userFound.createdAt,
         updatedAt :userFound.updatedAt,
     })
@@ -85,6 +85,7 @@ export const profile = async (req,res)=>{
         id: userFound.id,
         username: userFound.username,
         email :userFound.email,
+        role: userFound.role,
         createdAt :userFound.createdAt,
         updatedAt :userFound.updatedAt,
     })
@@ -105,6 +106,42 @@ export const verifyToken = async (req,res)=>{
             id:userFound._id,
             username: userFound.username,
             email: userFound.email,
+            role: userFound.role,
         });
     });
 };
+
+export const createAdmin = async (req,res) =>{
+    const {email,password,username,key} = req.body;
+
+    
+    try {
+        if(key!== process.env.ADMIN_CREATION_KEY && key !== ADMIN_CREATION_KEY){//valido clave secreta
+            return res.status(403).json({message:"Invalid admin creation key"});
+        }
+
+        const userFound = await User.findOne({email});//revisa si ya existe
+        if (userFound) return res.status(400).json({message: "Email already Exists"});
+
+        const passwordHash = await bcrypt.hash(password,10);//encripto
+
+        const newAdmin = new User({//creo admin
+            username,
+            email,
+            password:passwordHash,
+            role:"admin"
+        });
+
+        const savedAdmin = await newAdmin.save();
+
+        res.json({
+            id: savedAdmin._id,
+            username: savedAdmin.username,
+            email: savedAdmin.email,
+            role: savedAdmin.role,
+            createdAt:savedAdmin.createdAt,
+        });
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}

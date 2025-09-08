@@ -16,11 +16,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    // role: {
-    //     type:String,
-    //     enum: ["admin","odontologo"],//
-    //     default: "odontologo",//
-    // }
+    role: {
+        type:String,
+        enum: ["admin","odontologo"],//
+        default: "odontologo",//
+    }
 },{
     timestamps: true
 })
