@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 function LoginPage() {
   const {register, handleSubmit, formState:{errors}} = useForm();
-  const {signin, errors: signinErrors, isAuthenticated} = useAuth();
+  const {signin, errors: signinErrors, isAuthenticated, user} = useAuth();
   const navigate = useNavigate()
   const onsubmit = handleSubmit((data)=>{
     // console.log(data);
@@ -12,7 +12,13 @@ function LoginPage() {
   });
 
   useEffect(()=>{
-    if (isAuthenticated) navigate("/patients");
+    if (isAuthenticated) {
+      if(user.role === "admin"){
+        navigate("/");
+      } else {
+        navigate("/patients");
+      }
+    }
   },[isAuthenticated])
 
   return (

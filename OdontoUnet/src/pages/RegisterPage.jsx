@@ -7,11 +7,17 @@ function RegisterPage() {
 const {register, handleSubmit, formState:{
   errors
 }} =useForm()
-const {signup, isAuthenticated,errors: registerErrors} = useAuth()
+const {signup, isAuthenticated,errors: registerErrors, user} = useAuth()
 const navigate =useNavigate()
 // console.log(user);
 useEffect(()=>{
-  if (isAuthenticated) navigate('/patients');
+  if (isAuthenticated) {
+    if(user.role === "admin"){
+        navigate("/");
+      } else {
+        navigate("/patients");
+      }
+    }
   
 },[isAuthenticated])
 

@@ -20,6 +20,7 @@ export const usePatients = () => {
 
 export function PatientProvider({children}) {
     const [patients,setpatients] = useState([]);
+    const [errors, setErrors] = useState([]);
 
     const getPatients = async () =>{
         try {
@@ -32,10 +33,14 @@ export function PatientProvider({children}) {
 
     const createPatient = async (patient) =>{
         try {
+            setErrors([]);
             const res = await createPatientRequest(patient);
             setpatients([...patients, res.data]);
         } catch (error) {
-            console.error(error);
+        // Manejo de fetch o Axios
+            const message = error?.response?.data?.message || error?.message || "Error al crear paciente";
+            setErrors([message]);
+            throw new Error(message);
         }
     }
 
@@ -59,17 +64,21 @@ export function PatientProvider({children}) {
 
     const updatePatient = async (id,patient) =>{
         try {
+            setErrors([]);
             const res = await updatePatientRequest(id, patient);
             setpatients(
                 patients.map((p) => (p._id === id ? res.data : p))
             );
         } catch (error) {
-            console.error(error)
+            const message = error?.response?.data?.message || error?.message || "Error al actualizar paciente";
+            setErrors([message]);
+            throw new Error(message);
         }
     }
     return(
         <PatientContext.Provider value={{
             patients,
+            errors,
             getPatients,
             createPatient,
             deletePatient,

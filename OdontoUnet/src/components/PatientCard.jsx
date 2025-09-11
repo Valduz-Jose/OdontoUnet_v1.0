@@ -50,6 +50,10 @@ function PatientCard({patient}) {
         {patient.antecedentesFamiliares && (
           <p><strong>Antecedentes familiares:</strong> {patient.antecedentesFamiliares}</p>
         )}
+        <p className="text-slate-300">
+        Registrado por Odontologo : {patient.user?.username}
+        </p>
+
       </div>
     </div>
   )

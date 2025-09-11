@@ -13,9 +13,7 @@ export const createPatientSchema = z.object({
     fechaNacimiento: z.string({
         message: "Fecha de nacimiento inválida"
     }),
-    edad: z.coerce.number({
-        required_error: "Edad es requerida"
-    }),
+    edad: z.coerce.number().optional(),
     sexo: z.enum(["M", "F"], {
         required_error: "Sexo es requerido"
     }),
@@ -45,22 +43,3 @@ export const createPatientSchema = z.object({
     cirugias: z.string().optional(),
     antecedentesFamiliares: z.string().optional(),
 });
-
-// Nombre y Apellido 
-// Cédula 
-// Fecha de Nacimiento
-// Edad 
-// Sexo 
-// Teléfono de contacto
-// Telefono de emergencia
-// Dirección
-// Carrera
-// Grupo Sanguíneo
-// Motivo de la consulta
-// Carga de historia médica general 
-// Alergias 
-// Enfermedades crónicas 
-// Medicamentos.
-// Condición Especial
-// Cirugías
-// antecedentes familiares
