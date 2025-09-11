@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 
 const citaSchema = new mongoose.Schema({
-  // Referencia al paciente (por si luego quiero enlazar)
   paciente: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Patient",
     required: true,
   },
-  // Datos básicos del paciente en el momento de la cita (snapshots)
   pacienteDatos: {
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
@@ -20,18 +18,23 @@ const citaSchema = new mongoose.Schema({
     carrera: { type: String },
     grupoSanguineo: { type: String },
   },
-
   odontologo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-
   motivo: { type: String, required: true },
-  fecha: { type: Date, default: Date.now }, // siempre en el momento
-  odontograma: { type: mongoose.Schema.Types.Mixed }, // luego lo afinamos según diseño
+  fecha: { type: Date, default: Date.now },
+  odontograma: { type: mongoose.Schema.Types.Mixed },
   observaciones: { type: String },
   monto: { type: Number, required: true },
+  numeroReferencia: { type: String }, // nuevo campo para el bauche/recibo
+  insumosUsados: [
+    {
+      insumo: { type: mongoose.Schema.Types.ObjectId, ref: "Insumo" },
+      cantidad: { type: Number, required: true, min: 1 }
+    }
+  ]
 }, {
   timestamps: true,
 });
