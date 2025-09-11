@@ -75,6 +75,21 @@ export const getCita = async (req, res) => {
   }
 };
 
+// Obtener citas de un paciente
+export const getCitasByPaciente = async (req, res) => {
+  try {
+    const citas = await Cita.find({ paciente: req.params.id })
+      .populate("paciente", "nombre apellido cedula")
+      .populate("odontologo", "username email role");
+
+    res.json(citas);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener las citas del paciente" });
+  }
+};
+
+
 // Eliminar una cita
 export const deleteCita = async (req, res) => {
   try {
