@@ -12,9 +12,6 @@ router.get('/patients/:id',authRequired,getPatient);
 router.post('/patients',authRequired,validateSchema(createPatientSchema),createPatient);
 router.put('/patients/:id',authRequired,updatePatient);
 router.delete('/patients/:id',authRequired,deletePatient);
-// router.post('/patients',authRequired,requireRole(["odontologo"]),createTask);
 
-// Rutas del admin
-// router.get('/estadisticas',authRequired,requireRole(["admin"])getEstadisticas);
 
 export default router;

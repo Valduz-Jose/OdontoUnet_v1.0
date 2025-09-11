@@ -89,7 +89,7 @@ function NavBar() {
                   </li>
                   <li>
                     <Link
-                      to="/citas/new"
+                      to="/citas"
                       className="bg-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-600 transition"
                     >
                       Nueva Cita
@@ -176,7 +176,7 @@ function NavBar() {
                   </li>
                   <li>
                     <Link
-                      to="/citas/new"
+                      to="/citas"
                       onClick={() => setIsOpen(false)}
                       className="block bg-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-600 transition"
                     >

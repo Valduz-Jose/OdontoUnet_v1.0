@@ -1,7 +1,7 @@
 import { BrowserRouter,Routes,Route } from "react-router-dom";
 import { AuthProvider } from "./context/Auth.Context";
 import {PatientProvider} from './context/PatientContext';
-
+import NuevaCitaPage from "./pages/NuevaCitaPage";
 import NavBar from "./components/NavBar";
 
 //Paginas de Autenticacion
@@ -34,6 +34,7 @@ function App() {
             <Route path="/patients" element={<PatientPage/>}/>
             <Route path="/patients/new" element={<PatientFromPage/>}/>
             <Route path="/patients/:id" element={<PatientFromPage/>}/>
+            <Route path="/citas" element={<NuevaCitaPage/>}/>
           </Route>
         </Routes>
       </BrowserRouter>
