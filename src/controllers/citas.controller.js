@@ -36,85 +36,97 @@ export const createCita = async (req, res) => {
       grupoSanguineo: paciente.grupoSanguineo,
     };
 
-// ---------- Manejo del odontograma ----------
-let odontogramaSnapshot = paciente.odontograma || [];
+    // ---------- Manejo del odontograma ----------
+    let odontogramaFinal = [];
 
-// Si vienen actualizaciones desde el frontend
-if (odontogramaActualizado && odontogramaActualizado.length > 0) {
-  // Creamos un mapa con el odontograma actual
-  const odontogramaMap = new Map(
-    odontogramaSnapshot.map((d) => [d.numero, d.estado])
-  );
-
-  // Aplicamos actualizaciones (ej: [{numero: 12, estado: "Cariado"}])
-  odontogramaActualizado.forEach((diente) => {
-    if (diente.numero && diente.estado) {
-      odontogramaMap.set(diente.numero, diente.estado);
+    // 1. Obtener el odontograma actual del paciente (estado más reciente)
+    let odontogramaActualPaciente = paciente.odontograma || [];
+    
+    // Si el paciente no tiene odontograma, inicializar con todos "Sano"
+    if (odontogramaActualPaciente.length === 0) {
+      for (let i = 1; i <= 32; i++) {
+        odontogramaActualPaciente.push({ numero: i, estado: "Sano" });
+      }
     }
-  });
 
-  // Reconstruimos el array de dientes
-  odontogramaSnapshot = Array.from(odontogramaMap, ([numero, estado]) => ({
-    numero,
-    estado,
-  }));
+    // 2. Si vienen cambios desde el frontend, aplicarlos
+    if (odontogramaActualizado && odontogramaActualizado.length > 0) {
+      // Crear mapa con el odontograma actual del paciente
+      const odontogramaMap = new Map(
+        odontogramaActualPaciente.map((d) => [d.numero, d.estado])
+      );
 
-  // Validar estados
-  const estadosValidos = [
-    "Sano",
-    "Cariado",
-    "Obturado",
-    "Endodoncia",
-    "Ausente",
-    "Extraído",
-    "Sellado",
-    "Corona",
-    "Fracturado",
-    "Implante",
-  ];
+      // Aplicar actualizaciones
+      odontogramaActualizado.forEach((diente) => {
+        if (diente.numero && diente.estado) {
+          odontogramaMap.set(diente.numero, diente.estado);
+        }
+      });
 
-  odontogramaSnapshot = odontogramaSnapshot.map((d) => ({
-    numero: d.numero,
-    estado: estadosValidos.includes(d.estado) ? d.estado : "Sano",
-  }));
+      // Convertir de vuelta a array
+      odontogramaFinal = Array.from(odontogramaMap, ([numero, estado]) => ({
+        numero,
+        estado,
+      }));
+    } else {
+      // Si no hay cambios, usar el odontograma actual del paciente
+      odontogramaFinal = odontogramaActualPaciente;
+    }
 
-  // Guardamos en el paciente
-  paciente.odontograma = odontogramaSnapshot;
-  await paciente.save();
-}
+    // Validar estados
+    const estadosValidos = [
+      "Sano",
+      "Cariado", 
+      "Obturado",
+      "Endodoncia",
+      "Ausente",
+      "Extraído",
+      "Sellado",
+      "Corona",
+      "Fracturado",
+      "Implante",
+    ];
 
-    // Crear nueva cita
-const newCita = new Cita({
-  paciente: paciente._id,
-  pacienteDatos,
-  odontologo: req.user.id,
-  motivo,
-  odontograma: odontogramaSnapshot,
-  observaciones,
-  monto,
-  numeroReferencia,
-  insumosUsados,
-  tratamientos,
-  fecha: fecha || new Date(),
-});
+    odontogramaFinal = odontogramaFinal.map((d) => ({
+      numero: d.numero,
+      estado: estadosValidos.includes(d.estado) ? d.estado : "Sano",
+    }));
 
+    // 3. Actualizar el odontograma del paciente en la BD (estado más actual)
+    paciente.odontograma = odontogramaFinal;
+    await paciente.save();
+
+    // 4. Crear nueva cita con el snapshot del odontograma
+    const newCita = new Cita({
+      paciente: paciente._id,
+      pacienteDatos,
+      odontologo: req.user.id,
+      motivo,
+      odontograma: odontogramaFinal, // snapshot del odontograma en esta cita
+      observaciones,
+      monto,
+      numeroReferencia,
+      insumosUsados,
+      tratamientos,
+      fecha: fecha || new Date(),
+    });
 
     const savedCita = await newCita.save();
 
     res.status(201).json(savedCita);
   } catch (error) {
     console.error("Error al crear cita:", error);
-    res.status(500).json({ message: "Error al crear cita", error });
+    res.status(500).json({ message: "Error al crear cita", error: error.message });
   }
 };
-
 
 // Obtener todas las citas del odontólogo logueado
 export const getCitas = async (req, res) => {
   try {
     const citas = await Cita.find({ odontologo: req.user.id })
       .populate("paciente", "nombre apellido cedula")
-      .populate("odontologo", "username email role");
+      .populate("odontologo", "username email role")
+      .sort({ fecha: -1 }); // más recientes primero
 
     res.json(citas);
   } catch (error) {
@@ -137,13 +149,14 @@ export const getCita = async (req, res) => {
   }
 };
 
-// Obtener citas de un paciente
+// Obtener citas de un paciente (ordenadas de más reciente a más antigua)
 export const getCitasByPaciente = async (req, res) => {
   try {
     const citas = await Cita.find({ paciente: req.params.id })
       .populate("paciente", "nombre apellido cedula")
       .populate("odontologo", "username email role")
-      .populate("insumosUsados.insumo", "nombre"); // <-- esto es lo que falta
+      .populate("insumosUsados.insumo", "nombre")
+      .sort({ fecha: -1 }); // más recientes primero
 
     res.json(citas);
   } catch (error) {
@@ -152,7 +165,20 @@ export const getCitasByPaciente = async (req, res) => {
   }
 };
 
+// Obtener la última cita de un paciente (más reciente)
+export const getUltimaCitaPaciente = async (req, res) => {
+  try {
+    const ultimaCita = await Cita.findOne({ paciente: req.params.pacienteId })
+      .sort({ fecha: -1 }) // más reciente primero
+      .populate("paciente", "nombre apellido cedula")
+      .populate("odontologo", "username email role");
 
+    res.json(ultimaCita); // puede ser null si no hay citas
+  } catch (error) {
+    console.error("Error al obtener última cita:", error);
+    res.status(500).json({ message: "Error al obtener última cita" });
+  }
+};
 
 // Eliminar una cita
 export const deleteCita = async (req, res) => {
@@ -215,18 +241,3 @@ export const updateCita = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar cita" });
   }
 };
-
-export const getUltimaCitaPaciente = async (req, res) => {
-  try {
-    const cita = await Cita.findOne({ paciente: req.params.pacienteId }) // <- paciente, no pacienteId
-      .sort({ fecha: -1 });
-
-    if (!cita) return res.json(null); // si no hay cita, devolver null
-
-    res.json(cita);
-  } catch (err) {
-    console.error("Error al obtener última cita:", err);
-    res.status(500).json({ error: "Error al obtener última cita" });
-  }
-};
-

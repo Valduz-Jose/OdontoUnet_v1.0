@@ -29,32 +29,55 @@ export const coloresEstados = {
 /**
  * Dibuja un odontograma en un canvas
  * @param {CanvasRenderingContext2D} ctx - contexto del canvas
- * @param {Object} odontogramaData - objeto con pares {numero: estado}
+ * @param {Object|Array} odontogramaData - objeto con pares {numero: estado} o array de objetos {numero, estado}
  * @param {number} toothSize - tamaño del diente (default 30px)
  * @param {number} toothSpacing - espacio entre dientes (default 10px)
  */
 export function drawTeeth(ctx, odontogramaData, toothSize = 30, toothSpacing = 10) {
   const teethCount = 32;
+  
+  // Limpiar el canvas
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  
+  // Normalizar los datos - convertir array a objeto si es necesario
+  let odontogramaMap = {};
+  
+  if (Array.isArray(odontogramaData)) {
+    // Si es array, convertir a objeto
+    odontogramaData.forEach(d => {
+      if (d && d.numero && d.estado) {
+        odontogramaMap[d.numero] = d.estado;
+      }
+    });
+  } else if (typeof odontogramaData === 'object' && odontogramaData !== null) {
+    // Si ya es objeto, usar directamente
+    odontogramaMap = { ...odontogramaData };
+  }
 
-  // Crear un mapa para acceder rápido por número
-  const odontogramaMap = {};
-  odontogramaData.forEach(d => {
-    odontogramaMap[d.numero] = d.estado;
-  });
+  console.log("drawTeeth - Dibujando con mapa:", odontogramaMap);
 
+  // Dibujar cada diente
   for (let i = 1; i <= teethCount; i++) {
     const x = ((i - 1) % 16) * (toothSize + toothSpacing) + 20;
     const y = i <= 16 ? 20 : 80;
     const status = odontogramaMap[i] || "Sano";
 
+    // Dibujar el cuadrado del diente
     ctx.fillStyle = coloresEstados[status] || "#ffffff";
     ctx.fillRect(x, y, toothSize, toothSize);
+    
+    // Dibujar el borde
     ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1;
     ctx.strokeRect(x, y, toothSize, toothSize);
 
-    ctx.fillStyle = "#000000";
+    // Dibujar el número del diente
+    ctx.fillStyle = status === "Sano" || status === "Sellado" ? "#000000" : "#ffffff";
     ctx.font = "12px Arial";
-    ctx.fillText(i, x + 8, y + 20);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(i, x + toothSize/2, y + toothSize/2);
   }
+  
+  console.log("drawTeeth - Dibujado completado");
 }

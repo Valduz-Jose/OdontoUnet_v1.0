@@ -16,6 +16,7 @@ export const getPatients = async (req,res)=>{
          return res.status(500).json({message: "Algo salio mal al obtener los pacientes"});
     }
 };
+
 //Crear nuevo paciente
 export const createPatient = async (req,res)=>{
   try {
@@ -38,11 +39,19 @@ export const createPatient = async (req,res)=>{
 
     // calcula edad y crea paciente
     const edadCalculada = calculateAge(fechaNacimiento);
+    
+    // Crear odontograma inicial (32 dientes en "Sano")
+    const odontogramaInicial = Array.from({ length: 32 }, (_, i) => ({
+      numero: i + 1,
+      estado: "Sano",
+    }));
+
     const patientData = { 
       ...req.body, 
       fechaNacimiento,  // usamos la fecha normalizada
       edad: edadCalculada, 
-      user: req.user.id 
+      user: req.user.id,
+      odontograma: odontogramaInicial // inicializar odontograma
     };
 
     const newPatient = new Patient(patientData);
@@ -55,12 +64,24 @@ export const createPatient = async (req,res)=>{
     return res.status(500).json({message: "Algo salio mal al crear el paciente"});
   }
 };
+
 //obtener un paciente especifico
 export const getPatient = async (req,res)=>{
   try {
     const patient = await Patient.findById(req.params.id)
       .populate("user","username email role");
+    
     if (!patient) return res.status(404).json({ message:'Paciente no Encontrado' });
+
+    // Asegurar que el paciente tiene un odontograma
+    if (!patient.odontograma || patient.odontograma.length === 0) {
+      const odontogramaInicial = Array.from({ length: 32 }, (_, i) => ({
+        numero: i + 1,
+        estado: "Sano",
+      }));
+      patient.odontograma = odontogramaInicial;
+      await patient.save();
+    }
 
     // Normalizamos salida de fecha como string YYYY-MM-DD
     const patientObj = patient.toObject();
@@ -75,6 +96,7 @@ export const getPatient = async (req,res)=>{
     return res.status(404).json({message: "Paciente no Encontrado"});
   }
 };
+
 //eliminar un paciente
 export const deletePatient = async (req,res)=>{
     try {
@@ -85,11 +107,11 @@ export const deletePatient = async (req,res)=>{
         return res.status(404).json({message: "Paciente no Encontrado"});
     }
 };
+
 //actualizar un paciente
 export const updatePatient = async (req,res)=>{
   try {
     const updates = { ...req.body };
-    
     
     if (req.body.fechaNacimiento) {
         const fechaNormalizada = dayjs(req.body.fechaNacimiento).utc().format("YYYY-MM-DD");
@@ -110,6 +132,16 @@ export const updatePatient = async (req,res)=>{
 
     if (!patient) return res.status(404).json({ message:'Paciente no encontrado' });
 
+    // Asegurar que el paciente tiene un odontograma después de la actualización
+    if (!patient.odontograma || patient.odontograma.length === 0) {
+      const odontogramaInicial = Array.from({ length: 32 }, (_, i) => ({
+        numero: i + 1,
+        estado: "Sano",
+      }));
+      patient.odontograma = odontogramaInicial;
+      await patient.save();
+    }
+
     // Normalizamos salida de fecha
     const patientObj = patient.toObject();
     if (patientObj.fechaNacimiento) {
@@ -120,8 +152,7 @@ export const updatePatient = async (req,res)=>{
 
     res.json(patientObj);
   } catch (error) {
+    console.error("Error al actualizar paciente:", error);
     return res.status(404).json({message: "Paciente no encontrado"});
   }
 };
-
-

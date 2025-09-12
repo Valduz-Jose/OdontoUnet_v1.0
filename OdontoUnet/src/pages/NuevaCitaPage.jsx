@@ -39,8 +39,12 @@ function NuevaCitaPage() {
   // Cargar pacientes
   useEffect(() => {
     const fetchPatients = async () => {
-      const res = await getPatientsRequest();
-      setAllPatients(res.data);
+      try {
+        const res = await getPatientsRequest();
+        setAllPatients(res.data);
+      } catch (error) {
+        console.error("Error al cargar pacientes:", error);
+      }
     };
     fetchPatients();
   }, []);
@@ -60,42 +64,49 @@ function NuevaCitaPage() {
 
   // Dibujar odontograma cada vez que cambie
   useEffect(() => {
-    drawOdontograma();
+    if (canvasRef.current && Object.keys(citaData.odontograma).length > 0) {
+      drawOdontograma();
+    }
   }, [citaData.odontograma]);
 
-  // Seleccionar paciente y cargar odontograma
+  // Seleccionar paciente y cargar odontograma actual
   const handlePatientSelect = async (patient) => {
-    setSelectedPatient(patient);
-    setPatients([]);
-    setSearch('');
-
     try {
-      const citasPaciente = await getCitasByPaciente(patient._id);
+      setSelectedPatient(patient);
+      setPatients([]);
+      setSearch('');
 
-      let odontogramaInicial = {};
+      // Obtener el odontograma más reciente del paciente
+      let odontogramaActual = {};
 
-      if (citasPaciente.length > 0) {
-        // Tomar la cita más reciente (asumiendo backend ordena de más reciente a más antiguo)
-        const ultimaCita = citasPaciente[0];
-        if (ultimaCita.odontograma && ultimaCita.odontograma.length > 0) {
-          ultimaCita.odontograma.forEach(d => {
-            odontogramaInicial[d.numero] = d.estado;
-          });
-        }
-      } else if (patient.odontograma && patient.odontograma.length > 0) {
+      // 1. El odontograma actual del paciente ES el estado más reciente
+      console.log("Odontograma del paciente:", patient.odontograma);
+      
+      if (patient.odontograma && patient.odontograma.length > 0) {
+        // Usar el odontograma del paciente (que debería estar actualizado)
         patient.odontograma.forEach(d => {
-          odontogramaInicial[d.numero] = d.estado;
+          odontogramaActual[d.numero] = d.estado;
         });
+        console.log("Odontograma cargado desde paciente:", odontogramaActual);
       } else {
-        for (let i = 1; i <= teethCount; i++) odontogramaInicial[i] = "Sano";
+        // Si no hay odontograma, inicializar todos como "Sano"
+        for (let i = 1; i <= teethCount; i++) {
+          odontogramaActual[i] = "Sano";
+        }
+        console.log("Odontograma inicializado como 'Sano'");
       }
 
       setCitaData(prev => ({
         ...prev,
-        odontograma: odontogramaInicial
+        odontograma: odontogramaActual
       }));
-    } catch (err) {
-      console.error("Error al cargar odontograma del paciente:", err);
+
+      // Dibujar inmediatamente
+      setTimeout(() => drawOdontograma(), 100);
+
+    } catch (error) {
+      console.error("Error al seleccionar paciente:", error);
+      alert("Error al cargar datos del paciente");
     }
   };
 
@@ -111,6 +122,7 @@ function NuevaCitaPage() {
       referenciaPago: ''
     });
     setInsumosUsados([]);
+    setTratamientosUsados([]);
   };
 
   const handleChange = (e) => {
@@ -152,63 +164,64 @@ function NuevaCitaPage() {
   };
 
   // Enviar formulario
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!selectedPatient) return alert('Selecciona un paciente');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedPatient) return alert('Selecciona un paciente');
 
-  const insumosParaBackend = insumosUsados.map(i => ({
-    insumo: i._id,
-    cantidad: i.cantidadUsada
-  }));
+    try {
+      const insumosParaBackend = insumosUsados.map(i => ({
+        insumo: i._id,
+        cantidad: i.cantidadUsada
+      }));
 
-  // Transformar odontograma (objeto -> array)
-  const odontogramaArray = Object.entries(citaData.odontograma).map(
-    ([numero, estado]) => ({
-      numero: Number(numero),
-      estado
-    })
-  );
+      // Convertir odontograma de objeto a array
+      const odontogramaArray = Object.entries(citaData.odontograma).map(
+        ([numero, estado]) => ({
+          numero: Number(numero),
+          estado
+        })
+      );
 
-  const newCita = {
-    pacienteId: selectedPatient._id,
-    motivo: citaData.motivo,
-    odontograma: odontogramaArray,
-    observaciones: citaData.observaciones,
-    monto: Number(citaData.monto),
-    numeroReferencia: citaData.referenciaPago,
-    insumosUsados: insumosParaBackend,
-    tratamientos: tratamientosUsados,
-    fecha: new Date()
+      const newCita = {
+        pacienteId: selectedPatient._id,
+        motivo: citaData.motivo,
+        odontograma: odontogramaArray,
+        observaciones: citaData.observaciones,
+        monto: Number(citaData.monto) || 0,
+        numeroReferencia: citaData.referenciaPago,
+        insumosUsados: insumosParaBackend,
+        tratamientos: tratamientosUsados,
+        fecha: new Date()
+      };
+
+      // Crear la cita (incluye actualización del paciente)
+      await createCita(newCita);
+
+      alert("Cita creada con éxito");
+      navigate(`/paciente/${selectedPatient._id}/citas`);
+    } catch (error) {
+      console.error("Error al crear cita:", error);
+      alert("Error al crear cita: " + (error.response?.data?.message || error.message));
+    }
   };
-
-  try {
-    // 1️⃣ Actualizar odontograma del paciente
-    await updatePatientRequest(selectedPatient._id, { odontograma: odontogramaArray });
-
-    // 2️⃣ Crear la cita
-    await createCita(newCita);
-
-    alert("Cita creada con éxito");
-    navigate(`/paciente/${selectedPatient._id}/citas`);
-  } catch (err) {
-    console.error("Error al crear cita:", err);
-    alert("Error al crear cita");
-  }
-};
-
-
 
   // Dibujar odontograma
   const drawOdontograma = () => {
     const canvas = canvasRef.current;
-    if (!canvas || !citaData.odontograma) return;
+    if (!canvas) return;
+    
     const ctx = canvas.getContext("2d");
-    drawTeeth(ctx, citaData.odontograma);
+    canvas.width = 16 * (toothSize + toothSpacing) + 40;
+    canvas.height = 120;
+    
+    drawTeeth(ctx, citaData.odontograma, toothSize, toothSpacing);
   };
 
   // Click en canvas para cambiar estado de diente
   const handleCanvasClick = (e) => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+    
     const rect = canvas.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
@@ -216,11 +229,13 @@ const handleSubmit = async (e) => {
     for (let i = 1; i <= teethCount; i++) {
       const x = ((i - 1) % 16) * (toothSize + toothSpacing) + 20;
       const y = i <= 16 ? 20 : 80;
+      
       if (clickX >= x && clickX <= x + toothSize && clickY >= y && clickY <= y + toothSize) {
         setCitaData(prev => {
           const currentState = prev.odontograma[i] || "Sano";
           const currentIndex = estadosDiente.indexOf(currentState);
           const nextState = estadosDiente[(currentIndex + 1) % estadosDiente.length];
+          
           return {
             ...prev,
             odontograma: {
@@ -234,10 +249,12 @@ const handleSubmit = async (e) => {
     }
   };
 
-  const filteredPatients = search
+  // Filtrar pacientes para búsqueda
+  const filteredPatients = search.trim()
     ? allPatients.filter(p =>
-        p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-        p.apellido.toLowerCase().includes(search.toLowerCase())
+        p.nombre?.toLowerCase().includes(search.toLowerCase()) ||
+        p.apellido?.toLowerCase().includes(search.toLowerCase()) ||
+        p.cedula?.includes(search)
       ).slice(0, 5)
     : [];
 
@@ -250,7 +267,7 @@ const handleSubmit = async (e) => {
         <div className="relative w-full max-w-2xl">
           <input
             type="text"
-            placeholder="Buscar paciente..."
+            placeholder="Buscar paciente por nombre, apellido o cédula..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -274,7 +291,7 @@ const handleSubmit = async (e) => {
 
       {/* Formulario y odontograma */}
       {selectedPatient && (
-        <div className="bg-zinc-900 p-6 rounded shadow-xl w-full max-w-3xl mt-6 flex flex-col gap-6">
+        <div className="bg-zinc-900 p-6 rounded shadow-xl w-full max-w-4xl mt-6 flex flex-col gap-6">
           <button
             onClick={handleDeselectPatient}
             className="self-start px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
@@ -297,14 +314,17 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* Odontograma */}
-          <h2 className="text-2xl font-semibold text-gray-200 mt-4">Odontograma interactivo</h2>
-          <canvas
-            ref={canvasRef}
-            width={16 * (toothSize + toothSpacing) + 40}
-            height={120}
-            className="bg-zinc-800 rounded cursor-pointer"
-            onClick={handleCanvasClick}
-          />
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-200 mb-4">Odontograma interactivo</h2>
+            <p className="text-gray-400 text-sm mb-2">Haz clic en los dientes para cambiar su estado</p>
+            <canvas
+              ref={canvasRef}
+              width={16 * (toothSize + toothSpacing) + 40}
+              height={120}
+              className="bg-zinc-800 rounded cursor-pointer border border-gray-600"
+              onClick={handleCanvasClick}
+            />
+          </div>
 
           {/* Formulario de cita */}
           <h2 className="text-2xl font-semibold text-gray-200 mt-4">Datos de la cita</h2>
@@ -313,31 +333,34 @@ const handleSubmit = async (e) => {
               name="motivo"
               value={citaData.motivo}
               onChange={handleChange}
-              placeholder="Motivo"
+              placeholder="Motivo de la cita"
               required
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800"
+              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
             />
             <textarea
               name="observaciones"
               value={citaData.observaciones}
               onChange={handleChange}
               placeholder="Observaciones"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800"
+              rows="3"
+              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
             />
             <input
               type="number"
               name="monto"
               value={citaData.monto}
               onChange={handleChange}
-              placeholder="Monto"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800"
+              placeholder="Monto (opcional)"
+              min="0"
+              step="0.01"
+              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
             />
             <input
               name="referenciaPago"
               value={citaData.referenciaPago}
               onChange={handleChange}
-              placeholder="Número de referencia de pago"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800"
+              placeholder="Número de referencia de pago (opcional)"
+              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
             />
 
             {/* Tratamientos */}
@@ -345,13 +368,15 @@ const handleSubmit = async (e) => {
               <label className="block mb-2 font-semibold">Tratamientos realizados:</label>
               <div className="flex gap-2">
                 <select
-                  className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800"
+                  className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
                   onChange={(e) => handleAgregarTratamiento(e.target.value)}
                   value=""
                 >
                   <option value="">Seleccionar tratamiento</option>
                   {opcionesTratamientos.map((t, i) => (
-                    <option key={i} value={t}>{t}</option>
+                    <option key={i} value={t} disabled={tratamientosUsados.includes(t)}>
+                      {t}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -374,60 +399,66 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Insumos */}
-            <div className="flex flex-col md:flex-row gap-2 md:items-end">
-              <select
-                className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800"
-                value={insumoSeleccionado?._id || ''}
-                onChange={(e) => {
-                  const insumo = insumosDisponibles.find(i => i._id === e.target.value);
-                  setInsumoSeleccionado(insumo);
-                }}
-              >
-                <option value="">Seleccionar insumo</option>
-                {insumosDisponibles.map(i => (
-                  <option key={i._id} value={i._id}>{i.nombre} ({i.cantidadDisponible} disponibles)</option>
-                ))}
-              </select>
-              <input
-                type="number"
-                min="1"
-                value={cantidadInsumo}
-                onChange={(e) => setCantidadInsumo(Number(e.target.value))}
-                placeholder="Cantidad"
-                className="w-32 p-3 border border-gray-700 rounded bg-zinc-800"
-              />
-              <button
-                type="button"
-                onClick={handleAgregarInsumo}
-                className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 text-white"
-              >
-                Agregar
-              </button>
-            </div>
-
-            {insumosUsados.length > 0 && (
-              <div className="mt-4 bg-zinc-800 p-4 rounded">
-                <h3 className="font-semibold mb-2">Insumos usados:</h3>
-                <ul className="space-y-2">
-                  {insumosUsados.map((i, index) => (
-                    <li key={index} className="flex justify-between items-center bg-zinc-700 p-2 rounded">
-                      <span>{i.nombre} - Cantidad: {i.cantidadUsada}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleQuitarInsumo(index)}
-                        className="px-2 py-1 bg-red-600 rounded hover:bg-red-700"
-                      >
-                        Quitar
-                      </button>
-                    </li>
+            <div>
+              <label className="block mb-2 font-semibold">Insumos utilizados:</label>
+              <div className="flex flex-col md:flex-row gap-2 md:items-end">
+                <select
+                  className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+                  value={insumoSeleccionado?._id || ''}
+                  onChange={(e) => {
+                    const insumo = insumosDisponibles.find(i => i._id === e.target.value);
+                    setInsumoSeleccionado(insumo);
+                  }}
+                >
+                  <option value="">Seleccionar insumo</option>
+                  {insumosDisponibles.map(i => (
+                    <option key={i._id} value={i._id}>
+                      {i.nombre} ({i.cantidadDisponible} disponibles)
+                    </option>
                   ))}
-                </ul>
+                </select>
+                <input
+                  type="number"
+                  min="1"
+                  value={cantidadInsumo}
+                  onChange={(e) => setCantidadInsumo(Number(e.target.value))}
+                  placeholder="Cantidad"
+                  className="w-32 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+                />
+                <button
+                  type="button"
+                  onClick={handleAgregarInsumo}
+                  disabled={!insumoSeleccionado || cantidadInsumo <= 0}
+                  className="px-4 py-3 bg-blue-600 rounded hover:bg-blue-700 text-white disabled:bg-gray-600 disabled:cursor-not-allowed"
+                >
+                  Agregar
+                </button>
               </div>
-            )}
+
+              {insumosUsados.length > 0 && (
+                <div className="mt-4 bg-zinc-800 p-4 rounded">
+                  <h3 className="font-semibold mb-2">Insumos a utilizar:</h3>
+                  <ul className="space-y-2">
+                    {insumosUsados.map((i, index) => (
+                      <li key={index} className="flex justify-between items-center bg-zinc-700 p-2 rounded">
+                        <span>{i.nombre} - Cantidad: {i.cantidadUsada}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleQuitarInsumo(index)}
+                          className="px-2 py-1 bg-red-600 rounded hover:bg-red-700"
+                        >
+                          Quitar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
+              className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4 font-semibold"
             >
               Crear Cita
             </button>
