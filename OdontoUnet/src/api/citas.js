@@ -1,8 +1,14 @@
 import axios from "./axios"; // tu instancia de axios con baseURL y token
-
+import { getPatientRequest } from "./patient";
 // Crear una nueva cita
 export const createCita = async (data) => {
   try {
+    // Traer paciente
+    const paciente = await getPatientRequest(data.pacienteId);
+
+    // Agregar odontograma actual del paciente a la cita
+    data.odontograma = paciente.odontograma;
+
     const response = await axios.post("/citas", data);
     return response.data;
   } catch (error) {
@@ -52,4 +58,7 @@ export const deleteCita = async (id) => {
     console.error("Error al eliminar la cita:", error);
     throw error;
   }
+};
+export const getUltimaCitaPaciente = async (pacienteId) => {
+  return await axios.get(`/citas/${pacienteId}/ultima`);
 };

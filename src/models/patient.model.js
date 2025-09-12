@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
+import dienteSchema from "./dienteSchema.js";
 
-const patientSchema = new mongoose.Schema({
+// Generar odontograma inicial con 32 dientes en "Sano"
+const initialOdontograma = Array.from({ length: 32 }, (_, i) => ({
+  numero: i + 1,
+  estado: "Sano",
+}));
+
+const patientSchema = new mongoose.Schema(
+  {
     nombre: { type: String, required: true, trim: true },
     apellido: { type: String, required: true, trim: true },
     cedula: { type: String, required: true, unique: true },
@@ -20,13 +28,22 @@ const patientSchema = new mongoose.Schema({
     condicionEspecial: { type: String },
     cirugias: { type: String },
     antecedentesFamiliares: { type: String },
-    user:{//para asignar a quien pertenece
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required: true
-    }
-},{
-    timestamps:true
-})
 
-export default mongoose.model("Patient",patientSchema);
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    // Odontograma actual del paciente
+    odontograma: {
+      type: [dienteSchema],
+      default: initialOdontograma,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model("Patient", patientSchema);
