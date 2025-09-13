@@ -97,7 +97,14 @@ function NavBar() {
                   </li>
                 </>
               )}
-
+            <li>
+              <Link 
+                to="/insumos" 
+                className="bg-purple-500 px-4 py-1 rounded-sm hover:bg-purple-600 transition-colors"
+              >
+                Insumos
+              </Link>
+            </li>
               {/* Logout */}
               <li>
                 <button

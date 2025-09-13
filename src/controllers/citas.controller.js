@@ -22,6 +22,23 @@ export const createCita = async (req, res) => {
       return res.status(404).json({ message: "Paciente no encontrado" });
     }
 
+    // Verificar disponibilidad de insumos ANTES de procesar
+    if (insumosUsados && insumosUsados.length > 0) {
+      for (const insumoUsado of insumosUsados) {
+        const insumo = await Insumo.findById(insumoUsado.insumo);
+        if (!insumo) {
+          return res.status(404).json({ 
+            message: `Insumo con ID ${insumoUsado.insumo} no encontrado` 
+          });
+        }
+        if (insumo.cantidadDisponible < insumoUsado.cantidad) {
+          return res.status(400).json({ 
+            message: `No hay suficientes unidades del insumo "${insumo.nombre}". Disponible: ${insumo.cantidadDisponible}, Solicitado: ${insumoUsado.cantidad}` 
+          });
+        }
+      }
+    }
+
     // Copiar datos básicos del paciente (snapshot)
     const pacienteDatos = {
       nombre: paciente.nombre,
@@ -96,7 +113,27 @@ export const createCita = async (req, res) => {
     paciente.odontograma = odontogramaFinal;
     await paciente.save();
 
-    // 4. Crear nueva cita con el snapshot del odontograma
+    // 4. DESCONTAR INSUMOS DEL INVENTARIO
+    const insumosConDetalles = [];
+    if (insumosUsados && insumosUsados.length > 0) {
+      for (const insumoUsado of insumosUsados) {
+        const insumo = await Insumo.findById(insumoUsado.insumo);
+        
+        // Descontar del inventario
+        insumo.cantidadDisponible -= insumoUsado.cantidad;
+        await insumo.save();
+        
+        // Guardar detalles para la cita
+        insumosConDetalles.push({
+          insumo: insumo._id,
+          cantidad: insumoUsado.cantidad,
+        });
+        
+        console.log(`Insumo "${insumo.nombre}" descontado. Cantidad usada: ${insumoUsado.cantidad}, Restante: ${insumo.cantidadDisponible}`);
+      }
+    }
+
+    // 5. Crear nueva cita con el snapshot del odontograma
     const newCita = new Cita({
       paciente: paciente._id,
       pacienteDatos,
@@ -106,7 +143,7 @@ export const createCita = async (req, res) => {
       observaciones,
       monto,
       numeroReferencia,
-      insumosUsados,
+      insumosUsados: insumosConDetalles,
       tratamientos,
       fecha: fecha || new Date(),
     });

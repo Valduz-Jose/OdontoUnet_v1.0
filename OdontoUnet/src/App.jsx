@@ -14,6 +14,9 @@ import PatientPage from "./pages/PatientPage";
 import PatientFromPage from "./pages/PatientFormPage";
 import PatientCitasPage from "./pages/PatientCitasPage";
 
+// Página de insumos
+import InsumosPage from "./pages/InsumosPage";
+
 import HomePage from "./pages/HomePage";
 
 import ProtectedRoute from './ProtectedRoute'
@@ -38,6 +41,7 @@ function App() {
             <Route path="/patients/:id" element={<PatientFromPage/>}/>
             <Route path="/citas" element={<NuevaCitaPage/>}/>
             <Route path="/paciente/:id/citas" element={<PatientCitasPage/>}/>
+            <Route path="/insumos" element={<InsumosPage/>}/>
             
           </Route>
         </Routes>
