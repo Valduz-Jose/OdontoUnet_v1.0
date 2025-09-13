@@ -1,19 +1,30 @@
-import { Link } from "react-router-dom"
-import { useAuth } from "../context/Auth.Context"
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/Auth.Context";
 import { useState } from "react";
-import {Menu, X} from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 function NavBar() {
+  const { isAuthenticated, logout, user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
-    const {isAuthenticated,logout,user} = useAuth();
-    const [isOpen, setIsOpen]=useState(false);
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+  };
 
-    const handleLogout = () =>{
-        logout();
-        setIsOpen(false);
-    }
+  // Clase base para botones
+  const baseBtn = "px-4 py-2 rounded-md font-medium transition-colors";
 
- return (
+  // Estilos de colores
+  const btnStyles = {
+    primary: "bg-sky-500 hover:bg-sky-600",
+    secondary: "bg-indigo-500 hover:bg-indigo-600",
+    success: "bg-green-500 hover:bg-green-600",
+    warning: "bg-purple-500 hover:bg-purple-600",
+    danger: "bg-red-500 hover:bg-red-600",
+  };
+
+  return (
     <nav className="bg-zinc-900 shadow-md text-white">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo / Título */}
@@ -44,7 +55,7 @@ function NavBar() {
                   <li>
                     <Link
                       to="/insumos"
-                      className="hover:text-sky-400 transition-colors"
+                      className={`${baseBtn} ${btnStyles.warning}`}
                     >
                       Insumos
                     </Link>
@@ -52,7 +63,7 @@ function NavBar() {
                   <li>
                     <Link
                       to="/estadisticas"
-                      className="hover:text-sky-400 transition-colors"
+                      className={`${baseBtn} ${btnStyles.primary}`}
                     >
                       Estadísticas
                     </Link>
@@ -60,7 +71,7 @@ function NavBar() {
                   <li>
                     <Link
                       to="/finanzas"
-                      className="hover:text-sky-400 transition-colors"
+                      className={`${baseBtn} ${btnStyles.secondary}`}
                     >
                       Finanzas
                     </Link>
@@ -74,7 +85,7 @@ function NavBar() {
                   <li>
                     <Link
                       to="/patients"
-                      className="hover:text-sky-400 transition-colors"
+                      className={`${baseBtn} ${btnStyles.success}`}
                     >
                       Pacientes
                     </Link>
@@ -82,7 +93,7 @@ function NavBar() {
                   <li>
                     <Link
                       to="/patients/new"
-                      className="bg-sky-500 px-3 py-1 rounded-md hover:bg-sky-600 transition"
+                      className={`${baseBtn} ${btnStyles.primary}`}
                     >
                       Añadir Paciente
                     </Link>
@@ -90,26 +101,19 @@ function NavBar() {
                   <li>
                     <Link
                       to="/citas"
-                      className="bg-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-600 transition"
+                      className={`${baseBtn} ${btnStyles.secondary}`}
                     >
                       Nueva Cita
                     </Link>
                   </li>
                 </>
               )}
-            <li>
-              <Link 
-                to="/insumos" 
-                className="bg-purple-500 px-4 py-1 rounded-sm hover:bg-purple-600 transition-colors"
-              >
-                Insumos
-              </Link>
-            </li>
+
               {/* Logout */}
               <li>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 px-3 py-1 rounded-md hover:bg-red-600 transition"
+                  className={`${baseBtn} ${btnStyles.danger}`}
                 >
                   Logout
                 </button>
@@ -120,7 +124,7 @@ function NavBar() {
               <li>
                 <Link
                   to="/login"
-                  className="bg-indigo-500 px-4 py-1 rounded-md hover:bg-indigo-600 transition"
+                  className={`${baseBtn} ${btnStyles.secondary}`}
                 >
                   Login
                 </Link>
@@ -128,7 +132,7 @@ function NavBar() {
               <li>
                 <Link
                   to="/register"
-                  className="bg-sky-500 px-4 py-1 rounded-md hover:bg-sky-600 transition"
+                  className={`${baseBtn} ${btnStyles.primary}`}
                 >
                   Register
                 </Link>
@@ -148,17 +152,29 @@ function NavBar() {
               {user.role === "admin" && (
                 <>
                   <li>
-                    <Link to="/insumos" onClick={() => setIsOpen(false)}>
+                    <Link
+                      to="/insumos"
+                      onClick={() => setIsOpen(false)}
+                      className={`${baseBtn} ${btnStyles.warning} block`}
+                    >
                       Insumos
                     </Link>
                   </li>
                   <li>
-                    <Link to="/estadisticas" onClick={() => setIsOpen(false)}>
+                    <Link
+                      to="/estadisticas"
+                      onClick={() => setIsOpen(false)}
+                      className={`${baseBtn} ${btnStyles.primary} block`}
+                    >
                       Estadísticas
                     </Link>
                   </li>
                   <li>
-                    <Link to="/finanzas" onClick={() => setIsOpen(false)}>
+                    <Link
+                      to="/finanzas"
+                      onClick={() => setIsOpen(false)}
+                      className={`${baseBtn} ${btnStyles.secondary} block`}
+                    >
                       Finanzas
                     </Link>
                   </li>
@@ -168,7 +184,11 @@ function NavBar() {
               {user.role === "odontologo" && (
                 <>
                   <li>
-                    <Link to="/patients" onClick={() => setIsOpen(false)}>
+                    <Link
+                      to="/patients"
+                      onClick={() => setIsOpen(false)}
+                      className={`${baseBtn} ${btnStyles.success} block`}
+                    >
                       Pacientes
                     </Link>
                   </li>
@@ -176,7 +196,7 @@ function NavBar() {
                     <Link
                       to="/patients/new"
                       onClick={() => setIsOpen(false)}
-                      className="block bg-sky-500 px-3 py-1 rounded-md hover:bg-sky-600 transition"
+                      className={`${baseBtn} ${btnStyles.primary} block`}
                     >
                       Añadir Paciente
                     </Link>
@@ -185,7 +205,7 @@ function NavBar() {
                     <Link
                       to="/citas"
                       onClick={() => setIsOpen(false)}
-                      className="block bg-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-600 transition"
+                      className={`${baseBtn} ${btnStyles.secondary} block`}
                     >
                       Nueva Cita
                     </Link>
@@ -196,7 +216,7 @@ function NavBar() {
               <li>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left bg-red-500 px-3 py-1 rounded-md hover:bg-red-600 transition"
+                  className={`${baseBtn} ${btnStyles.danger} w-full text-left`}
                 >
                   Logout
                 </button>
@@ -208,7 +228,7 @@ function NavBar() {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="block bg-indigo-500 px-4 py-1 rounded-md hover:bg-indigo-600 transition"
+                  className={`${baseBtn} ${btnStyles.secondary} block`}
                 >
                   Login
                 </Link>
@@ -217,7 +237,7 @@ function NavBar() {
                 <Link
                   to="/register"
                   onClick={() => setIsOpen(false)}
-                  className="block bg-sky-500 px-4 py-1 rounded-md hover:bg-sky-600 transition"
+                  className={`${baseBtn} ${btnStyles.primary} block`}
                 >
                   Register
                 </Link>
@@ -230,4 +250,4 @@ function NavBar() {
   );
 }
 
-export default NavBar
+export default NavBar;

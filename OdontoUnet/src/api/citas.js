@@ -4,10 +4,12 @@ import { getPatientRequest } from "./patient";
 // Crear una nueva cita
 export const createCita = async (data) => {
   try {
+    console.log("Enviando datos de cita al backend:", data);
     const response = await axios.post("/citas", data);
+    console.log("Respuesta del backend al crear cita:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error al crear la cita:", error);
+    console.error("Error al crear la cita:", error.response?.data || error.message);
     throw error;
   }
 };
