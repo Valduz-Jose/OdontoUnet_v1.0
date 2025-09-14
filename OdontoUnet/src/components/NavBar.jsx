@@ -1,54 +1,74 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/Auth.Context";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, Moon, Sun, Users } from "lucide-react";
 
 function NavBar() {
   const { isAuthenticated, logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  // Cargar tema del localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    setIsDark(shouldBeDark);
+    document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
+  }, []);
+
+  // Cambiar tema
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    const themeValue = newTheme ? 'dark' : 'light';
+    localStorage.setItem('theme', themeValue);
+    document.documentElement.setAttribute('data-theme', themeValue);
+  };
 
   const handleLogout = () => {
     logout();
     setIsOpen(false);
   };
 
-  // Clase base para botones
-  const baseBtn = "px-4 py-2 rounded-md font-medium transition-colors";
-
-  // Estilos de colores
-  const btnStyles = {
-    primary: "bg-sky-500 hover:bg-sky-600",
-    secondary: "bg-indigo-500 hover:bg-indigo-600",
-    success: "bg-green-500 hover:bg-green-600",
-    warning: "bg-purple-500 hover:bg-purple-600",
-    danger: "bg-red-500 hover:bg-red-600",
-    info: "bg-blue-500 hover:bg-blue-600",
-  };
-
   return (
-    <nav className="bg-zinc-900 shadow-md text-white">
+    <nav className="card-pastel border-b-2 border-pastel-mint-dark shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo / Título */}
+        {/* Logo / Título - SIEMPRE va a home */}
         <Link
-          to={isAuthenticated ? "/" : "/"}
-          className="text-2xl font-bold tracking-wide"
+          to="/"
+          className="text-2xl font-bold tracking-wide text-pastel-primary hover:text-blue-600 transition-colors"
+          title="Ir al inicio"
         >
           Sistema Odontológico
         </Link>
 
         {/* Botón menú móvil */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-pastel-primary hover:text-blue-600 transition-colors"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
         {/* Menú en escritorio */}
-        <ul className="hidden md:flex gap-x-4 items-center">
+        <ul className="hidden md:flex gap-x-3 items-center">
           {isAuthenticated ? (
             <>
-              <li className="text-sm">👋 Bienvenid@ {user.username}</li>
+              <li className="text-sm text-pastel-secondary">👋 Hola, {user.username}</li>
+
+              {/* Botón Pacientes - TODOS los usuarios autenticados */}
+              <li>
+                <Link
+                  to="/patients"
+                  className="btn-pastel-success px-4 py-2 rounded-md font-medium transition-pastel flex items-center gap-2"
+                  title="Ver lista de pacientes"
+                >
+                  <Users size={16} />
+                  Pacientes
+                </Link>
+              </li>
 
               {/* Opciones para Admin */}
               {user.role === "admin" && (
@@ -56,7 +76,8 @@ function NavBar() {
                   <li>
                     <Link
                       to="/insumos"
-                      className={`${baseBtn} ${btnStyles.warning}`}
+                      className="btn-pastel-warning px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Gestionar inventario de insumos médicos"
                     >
                       Insumos
                     </Link>
@@ -64,7 +85,8 @@ function NavBar() {
                   <li>
                     <Link
                       to="/estadisticas"
-                      className={`${baseBtn} ${btnStyles.primary}`}
+                      className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Ver estadísticas y reportes del sistema"
                     >
                       Estadísticas
                     </Link>
@@ -72,18 +94,20 @@ function NavBar() {
                   <li>
                     <Link
                       to="/carousel-admin"
-                      className={`${baseBtn} ${btnStyles.info}`}
+                      className="btn-pastel-info px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Gestionar imágenes del carrusel de inicio"
                     >
                       Carrusel
                     </Link>
-                    <li>
-                    <Link
-                      to="/patients"
-                      className={`${baseBtn} ${btnStyles.success}`}
-                    >
-                      Pacientes
-                    </Link>
                   </li>
+                  <li>
+                    <Link
+                      to="/doctores"
+                      className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Ver perfiles de doctores registrados"
+                    >
+                      Doctores
+                    </Link>
                   </li>
                 </>
               )}
@@ -93,24 +117,18 @@ function NavBar() {
                 <>
                   <li>
                     <Link
-                      to="/patients"
-                      className={`${baseBtn} ${btnStyles.success}`}
-                    >
-                      Pacientes
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
                       to="/patients/new"
-                      className={`${baseBtn} ${btnStyles.primary}`}
+                      className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Registrar un nuevo paciente"
                     >
-                      Añadir Paciente
+                      Nuevo Paciente
                     </Link>
                   </li>
                   <li>
                     <Link
                       to="/citas"
-                      className={`${baseBtn} ${btnStyles.secondary}`}
+                      className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Crear una nueva cita médica"
                     >
                       Nueva Cita
                     </Link>
@@ -122,38 +140,63 @@ function NavBar() {
               <li>
                 <Link
                   to="/profile"
-                  className={`${baseBtn} ${btnStyles.info}`}
+                  className="btn-pastel-info px-4 py-2 rounded-md font-medium transition-pastel"
+                  title="Ver y editar mi perfil"
                 >
                   Perfil
                 </Link>
+              </li>
+
+              {/* Cambiar tema */}
+              <li>
+                <button
+                  onClick={toggleTheme}
+                  className="btn-pastel-secondary px-3 py-2 rounded-md transition-pastel"
+                  title={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+                >
+                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
               </li>
 
               {/* Logout */}
               <li>
                 <button
                   onClick={handleLogout}
-                  className={`${baseBtn} ${btnStyles.danger}`}
+                  className="btn-pastel-danger px-4 py-2 rounded-md font-medium transition-pastel"
+                  title="Cerrar sesión"
                 >
-                  Logout
+                  Salir
                 </button>
               </li>
             </>
           ) : (
             <>
+              {/* Cambiar tema para usuarios no autenticados */}
+              <li>
+                <button
+                  onClick={toggleTheme}
+                  className="btn-pastel-secondary px-3 py-2 rounded-md transition-pastel"
+                  title={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+                >
+                  {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
+              </li>
               <li>
                 <Link
                   to="/login"
-                  className={`${baseBtn} ${btnStyles.secondary}`}
+                  className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel"
+                  title="Iniciar sesión"
                 >
-                  Login
+                  Iniciar Sesión
                 </Link>
               </li>
               <li>
                 <Link
                   to="/register"
-                  className={`${baseBtn} ${btnStyles.primary}`}
+                  className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel"
+                  title="Crear cuenta nueva"
                 >
-                  Register
+                  Registrarse
                 </Link>
               </li>
             </>
@@ -163,10 +206,21 @@ function NavBar() {
 
       {/* Menú en móvil */}
       {isOpen && (
-        <ul className="md:hidden bg-zinc-800 px-4 py-4 space-y-3">
+        <ul className="md:hidden bg-pastel-blue px-4 py-4 space-y-3 border-t border-pastel-mint-dark">
           {isAuthenticated ? (
             <>
-              <li className="text-sm">👋 Bienvenid@ {user.username}</li>
+              <li className="text-sm text-pastel-secondary">👋 Hola, {user.username}</li>
+
+              {/* Pacientes - para todos */}
+              <li>
+                <Link
+                  to="/patients"
+                  onClick={() => setIsOpen(false)}
+                  className="btn-pastel-success px-4 py-2 rounded-md font-medium transition-pastel block text-center"
+                >
+                  Pacientes
+                </Link>
+              </li>
 
               {user.role === "admin" && (
                 <>
@@ -174,7 +228,7 @@ function NavBar() {
                     <Link
                       to="/insumos"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.warning} block`}
+                      className="btn-pastel-warning px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
                       Insumos
                     </Link>
@@ -183,7 +237,7 @@ function NavBar() {
                     <Link
                       to="/estadisticas"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.primary} block`}
+                      className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
                       Estadísticas
                     </Link>
@@ -192,17 +246,18 @@ function NavBar() {
                     <Link
                       to="/carousel-admin"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.info} block`}
+                      className="btn-pastel-info px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
                       Carrusel
                     </Link>
                   </li>
                   <li>
                     <Link
-                      to="/patients"
-                      className={`${baseBtn} ${btnStyles.success} block`}
+                      to="/doctores"
+                      onClick={() => setIsOpen(false)}
+                      className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
-                      Pacientes
+                      Doctores
                     </Link>
                   </li>
                 </>
@@ -212,27 +267,18 @@ function NavBar() {
                 <>
                   <li>
                     <Link
-                      to="/patients"
-                      onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.success} block`}
-                    >
-                      Pacientes
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
                       to="/patients/new"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.primary} block`}
+                      className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
-                      Añadir Paciente
+                      Nuevo Paciente
                     </Link>
                   </li>
                   <li>
                     <Link
                       to="/citas"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.secondary} block`}
+                      className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                     >
                       Nueva Cita
                     </Link>
@@ -244,7 +290,7 @@ function NavBar() {
                 <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className={`${baseBtn} ${btnStyles.info} block`}
+                  className="btn-pastel-info px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                 >
                   Perfil
                 </Link>
@@ -252,31 +298,48 @@ function NavBar() {
 
               <li>
                 <button
-                  onClick={handleLogout}
-                  className={`${baseBtn} ${btnStyles.danger} w-full text-left`}
+                  onClick={toggleTheme}
+                  className="btn-pastel-secondary px-4 py-2 rounded-md transition-pastel w-full text-center"
                 >
-                  Logout
+                  {isDark ? "🌞 Tema Claro" : "🌙 Tema Oscuro"}
+                </button>
+              </li>
+
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="btn-pastel-danger px-4 py-2 rounded-md font-medium transition-pastel w-full text-center"
+                >
+                  Cerrar Sesión
                 </button>
               </li>
             </>
           ) : (
             <>
               <li>
+                <button
+                  onClick={toggleTheme}
+                  className="btn-pastel-secondary px-4 py-2 rounded-md transition-pastel w-full text-center"
+                >
+                  {isDark ? "🌞 Tema Claro" : "🌙 Tema Oscuro"}
+                </button>
+              </li>
+              <li>
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className={`${baseBtn} ${btnStyles.secondary} block`}
+                  className="btn-pastel-secondary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                 >
-                  Login
+                  Iniciar Sesión
                 </Link>
               </li>
               <li>
                 <Link
                   to="/register"
                   onClick={() => setIsOpen(false)}
-                  className={`${baseBtn} ${btnStyles.primary} block`}
+                  className="btn-pastel-primary px-4 py-2 rounded-md font-medium transition-pastel block text-center"
                 >
-                  Register
+                  Registrarse
                 </Link>
               </li>
             </>

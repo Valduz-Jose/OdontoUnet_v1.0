@@ -8,18 +8,17 @@ export const register = async (req,res)=>{
     const{email,password,username} = req.body
 
     try {
-
         const userFound = await User.findOne({email})
-        if (userFound) return res.status(400).json(["The Email is already in use"]);
+        if (userFound) return res.status(400).json(["Este email ya está en uso"]);
 
-        const passwordHash = await bcrypt.hash(password,10)//encriptar
+        const passwordHash = await bcrypt.hash(password,10)
         const newUser = new User({
         username,
         email,
-        password: passwordHash,//encriptando la contrasena
-        role: "odontologo"//forzamos aqui
+        password: passwordHash,
+        role: "odontologo"
     })
-    // console.log(newUser);
+
     const userSaved = await newUser.save()
     const token = await createAccessToken ({id:userSaved._id});
     res.cookie('token',token);
@@ -27,29 +26,28 @@ export const register = async (req,res)=>{
         id: userSaved.id,
         username: userSaved.username,
         email :userSaved.email,
-        role:userSaved.role,//envio rol
+        role:userSaved.role,
         createdAt :userSaved.createdAt,
         updatedAt :userSaved.updatedAt,
     })
-    // res.send("registrando")
-    // res.json({
-    // message: "User Create Successfully",
-    // })
     } catch (error) {
-        res.status(500).json({message: error.message})
+        console.error("Error en registro:", error);
+        if (error.code === 11000) {
+            return res.status(400).json(["Este email ya está registrado"]);
+        }
+        res.status(500).json({message: "Error interno del servidor"})
     }
-   
 }
 
 export const login = async (req,res)=>{
     const{email,password} = req.body
 
     try {
-        const userFound = await User.findOne({email})//busca el usuario por su email
-        if(!userFound) return res.status(400).json({message:"User not found"});//si no lo encuentra
+        const userFound = await User.findOne({email})
+        if(!userFound) return res.status(400).json({message:"Email o contraseña incorrectos"});
 
-        const isMatch = await bcrypt.compare(password,userFound.password)//compara con password
-        if(!isMatch) return res.status(400).json({message:"Incorrect Password"});//si no es igual
+        const isMatch = await bcrypt.compare(password,userFound.password)
+        if(!isMatch) return res.status(400).json({message:"Email o contraseña incorrectos"});
 
     const token = await createAccessToken ({id:userFound._id});
     res.cookie('token',token);
@@ -61,14 +59,10 @@ export const login = async (req,res)=>{
         createdAt :userFound.createdAt,
         updatedAt :userFound.updatedAt,
     })
-    // res.send("registrando")
-    // res.json({
-    // message: "User Create Successfully",
-    // })
     } catch (error) {
-        res.status(500).json({message: error.message})
+        console.error("Error en login:", error);
+        res.status(500).json({message: "Error interno del servidor"})
     }
-   
 }
 
 export const logout = (req,res)=>{
@@ -80,7 +74,7 @@ export const logout = (req,res)=>{
 
 export const profile = async (req,res)=>{
     const userFound = await User.findById(req.user.id)
-    if(!userFound) return res.status(400).json({message: "User not found"})
+    if(!userFound) return res.status(400).json({message: "Usuario no encontrado"})
     return res.json({
         id: userFound.id,
         username: userFound.username,
@@ -93,13 +87,13 @@ export const profile = async (req,res)=>{
 
 export const verifyToken = async (req,res)=>{
     const {token} = req.cookies
-    if(!token) return res.status(401).json({message: "Sin autorizacion"});
+    if(!token) return res.status(401).json({message: "No autorizado"});
     jwt.verify(token, TOKEN_SECRET, async (err,user)=>{
-        if (err) return res.status(401).json({message: "Sin autorizacion"});
+        if (err) return res.status(401).json({message: "Token inválido"});
 
         const userFound = await User.findById(user.id)
         if(!userFound) return res.status(401).json({
-            message:"Sin autorizacion"
+            message:"Usuario no encontrado"
         });
 
         return res.json({
@@ -114,18 +108,17 @@ export const verifyToken = async (req,res)=>{
 export const createAdmin = async (req,res) =>{
     const {email,password,username,key} = req.body;
 
-    
     try {
-        if(key!== process.env.ADMIN_CREATION_KEY && key !== ADMIN_CREATION_KEY){//valido clave secreta
-            return res.status(403).json({message:"Invalid admin creation key"});
+        if(key!== process.env.ADMIN_CREATION_KEY && key !== ADMIN_CREATION_KEY){
+            return res.status(403).json({message:"Clave de administrador inválida"});
         }
 
-        const userFound = await User.findOne({email});//revisa si ya existe
-        if (userFound) return res.status(400).json({message: "Email already Exists"});
+        const userFound = await User.findOne({email});
+        if (userFound) return res.status(400).json({message: "Este email ya existe"});
 
-        const passwordHash = await bcrypt.hash(password,10);//encripto
+        const passwordHash = await bcrypt.hash(password,10);
 
-        const newAdmin = new User({//creo admin
+        const newAdmin = new User({
             username,
             email,
             password:passwordHash,
@@ -142,6 +135,10 @@ export const createAdmin = async (req,res) =>{
             createdAt:savedAdmin.createdAt,
         });
     } catch (error) {
-        res.status(500).json({message: error.message});
+        console.error("Error creando admin:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({message: "Este email ya está registrado"});
+        }
+        res.status(500).json({message: "Error interno del servidor"});
     }
 }

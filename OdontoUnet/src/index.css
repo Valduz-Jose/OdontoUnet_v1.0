@@ -3,9 +3,200 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body{
-  background: #202020;
+/* Variables para tema claro (pastel) */
+:root {
+  --bg-primary: #fefefe;
+  --bg-secondary: #f8f9ff;
+  --bg-card: #ffffff;
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  
+  /* Colores pastel para odontología */
+  --pastel-mint: #e6f7ff;
+  --pastel-mint-dark: #b3e5ff;
+  --pastel-blue: #e8f2ff;
+  --pastel-blue-dark: #bdd9ff;
+  --pastel-green: #f0fdf4;
+  --pastel-green-dark: #dcfce7;
+  --pastel-purple: #faf5ff;
+  --pastel-purple-dark: #f3e8ff;
+  --pastel-pink: #fdf2f8;
+  --pastel-pink-dark: #fce7f3;
+  --pastel-yellow: #fffbeb;
+  --pastel-yellow-dark: #fef3c7;
+  
+  /* Colores de acción */
+  --color-primary: #93c5fd; /* Azul pastel */
+  --color-secondary: #a78bfa; /* Púrpura pastel */
+  --color-success: #86efac; /* Verde pastel */
+  --color-warning: #fde047; /* Amarillo pastel */
+  --color-danger: #fca5a5; /* Rojo pastel */
+  --color-info: #67e8f9; /* Cyan pastel */
+  
+  /* Bordes y sombras */
+  --border-color: #e2e8f0;
+  --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Variables para tema oscuro */
+[data-theme="dark"] {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --bg-card: #2d3748;
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #a0aec0;
+  
+  /* Colores pastel ajustados para tema oscuro */
+  --pastel-mint: #1a365d;
+  --pastel-mint-dark: #2c5282;
+  --pastel-blue: #1a202c;
+  --pastel-blue-dark: #2d3748;
+  --pastel-green: #1a202c;
+  --pastel-green-dark: #2f855a;
+  --pastel-purple: #322659;
+  --pastel-purple-dark: #553c9a;
+  --pastel-pink: #702459;
+  --pastel-pink-dark: #97266d;
+  --pastel-yellow: #744210;
+  --pastel-yellow-dark: #b7791f;
+  
+  --border-color: #4a5568;
+  --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Clases utilitarias para colores pastel */
+.bg-pastel-mint { background-color: var(--pastel-mint); }
+.bg-pastel-mint-dark { background-color: var(--pastel-mint-dark); }
+.bg-pastel-blue { background-color: var(--pastel-blue); }
+.bg-pastel-blue-dark { background-color: var(--pastel-blue-dark); }
+.bg-pastel-green { background-color: var(--pastel-green); }
+.bg-pastel-green-dark { background-color: var(--pastel-green-dark); }
+.bg-pastel-purple { background-color: var(--pastel-purple); }
+.bg-pastel-purple-dark { background-color: var(--pastel-purple-dark); }
+.bg-pastel-pink { background-color: var(--pastel-pink); }
+.bg-pastel-pink-dark { background-color: var(--pastel-pink-dark); }
+.bg-pastel-yellow { background-color: var(--pastel-yellow); }
+.bg-pastel-yellow-dark { background-color: var(--pastel-yellow-dark); }
+
+.text-pastel-primary { color: var(--text-primary); }
+.text-pastel-secondary { color: var(--text-secondary); }
+.text-pastel-muted { color: var(--text-muted); }
+
+/* Botones con colores pastel */
+.btn-pastel-primary {
+  background-color: var(--color-primary);
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+.btn-pastel-primary:hover {
+  background-color: #60a5fa;
   color: white;
+}
+
+.btn-pastel-secondary {
+  background-color: var(--color-secondary);
+  color: #5b21b6;
+  border: 1px solid #a78bfa;
+}
+.btn-pastel-secondary:hover {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.btn-pastel-success {
+  background-color: var(--color-success);
+  color: #059669;
+  border: 1px solid #86efac;
+}
+.btn-pastel-success:hover {
+  background-color: #34d399;
+  color: white;
+}
+
+.btn-pastel-warning {
+  background-color: var(--color-warning);
+  color: #a16207;
+  border: 1px solid #fde047;
+}
+.btn-pastel-warning:hover {
+  background-color: #facc15;
+  color: #451a03;
+}
+
+.btn-pastel-danger {
+  background-color: var(--color-danger);
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+.btn-pastel-danger:hover {
+  background-color: #f87171;
+  color: white;
+}
+
+.btn-pastel-info {
+  background-color: var(--color-info);
+  color: #0e7490;
+  border: 1px solid #67e8f9;
+}
+.btn-pastel-info:hover {
+  background-color: #22d3ee;
+  color: white;
+}
+
+/* Cards y contenedores */
+.card-pastel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-light);
+  border-radius: 12px;
+  transition: box-shadow 0.3s ease;
+}
+.card-pastel:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+/* Inputs y formularios */
+.input-pastel {
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+.input-pastel:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.1);
+}
+
+/* Animaciones suaves */
+.transition-pastel {
+  transition: all 0.3s ease;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 @theme inline {
@@ -31,95 +222,47 @@ body{
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+  --primary: #93c5fd;
+  --primary-foreground: #1e40af;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #fca5a5;
+  --border: #e2e8f0;
+  --input: #f8fafc;
+  --ring: #93c5fd;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+[data-theme="dark"] {
+  --background: #1a202c;
+  --foreground: #f7fafc;
+  --card: #2d3748;
+  --card-foreground: #f7fafc;
+  --popover: #2d3748;
+  --popover-foreground: #f7fafc;
+  --primary: #60a5fa;
+  --primary-foreground: #f7fafc;
+  --secondary: #4a5568;
+  --secondary-foreground: #f7fafc;
+  --muted: #4a5568;
+  --muted-foreground: #a0aec0;
+  --accent: #4a5568;
+  --accent-foreground: #f7fafc;
+  --destructive: #f56565;
+  --border: #4a5568;
+  --input: #2d3748;
+  --ring: #60a5fa;
 }

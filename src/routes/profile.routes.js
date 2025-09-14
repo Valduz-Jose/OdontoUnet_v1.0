@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authRequired } from "../middlewares/validateToken.js";
-import { getProfile, updateProfile, getPublicProfile, getAllDoctors } from "../controllers/profile.controller.js";
+import { adminRequired } from "../middlewares/role.middleware.js";
+import { getProfile, updateProfile, getPublicProfile, getAllDoctors, getDoctorsWithStats } from "../controllers/profile.controller.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -45,5 +46,6 @@ router.get("/profile", authRequired, getProfile);
 router.put("/profile", authRequired, upload.single('foto'), updateProfile);
 router.get("/profile/public/:id", getPublicProfile);
 router.get("/doctors", getAllDoctors);
+router.get("/doctors-stats", authRequired, adminRequired, getDoctorsWithStats);
 
 export default router;

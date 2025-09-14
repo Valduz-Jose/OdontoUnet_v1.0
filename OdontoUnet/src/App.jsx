@@ -5,7 +5,10 @@ import NuevaCitaPage from "./pages/NuevaCitaPage";
 import NavBar from "./components/NavBar";
 
 //Pagimport { BrowserRouter,Routes,Route } from "react-router-dom";
-
+// import { AuthProvider } from "./context/Auth.Context";
+// import {PatientProvider} from './context/PatientContext';
+// import NuevaCitaPage from "./pages/NuevaCitaPage";
+// import NavBar from "./components/NavBar";
 
 //Paginas de Autenticacion
 import RegisterPage from './pages/RegisterPage'
@@ -21,6 +24,7 @@ import PatientCitasPage from "./pages/PatientCitasPage";
 import InsumosPage from "./pages/InsumosPage";
 import StatisticsPage from "./pages/StatisticsPage";
 import CarouselAdminPage from "./pages/CarouselAdminPage";
+import DoctorsPage from "./pages/DoctorsPage";
 
 import HomePage from "./pages/HomePage";
 
@@ -50,6 +54,7 @@ function App() {
             <Route path="/insumos" element={<InsumosPage/>}/>
             <Route path="/estadisticas" element={<StatisticsPage/>}/>
             <Route path="/carousel-admin" element={<CarouselAdminPage/>}/>
+            <Route path="/doctores" element={<DoctorsPage/>}/>
             
           </Route>
         </Routes>
