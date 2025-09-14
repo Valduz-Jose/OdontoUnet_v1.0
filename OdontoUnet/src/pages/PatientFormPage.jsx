@@ -8,8 +8,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useState ,useEffect } from 'react';
 import * as React from "react"
 import { Calendar as ShadcnCalendar } from "@/components/ui/calendar"
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
 import { DatePicker } from "@/components/ui/DatePicker"
 import { toLocalDate } from "@/utils/date"
 
@@ -27,11 +25,35 @@ function PatientFormPage() {
   const navigate = useNavigate();
   const params = useParams();
 
+  // Tipos de sangre
+  const tiposSangre = [
+    'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+  ];
+
+  // Carreras disponibles
+  const carreras = [
+    'Ingeniería en Informática',
+    'Ingeniería Industrial', 
+    'Ingeniería Electrónica',
+    'Ingeniería Mecánica',
+    'Ingeniería Producción Animal',
+    'Ingeniería Agroindustrial',
+    'Ingeniería Agronómica',
+    'Ingeniería Ambiental',
+    'Ingeniería Civil',
+    'Arquitectura',
+    'Licenciatura en Música',
+    'Licenciatura en Psicología',
+    'TSU Entrenamiento Deportivo',
+    'Personal Docente',
+    'Personal Obrero',
+    'Personal Administrativo'
+  ];
+
   useEffect(()=>{
     async function loadPatient(){
       if(params.id){
       const patient = await getPatient(params.id);
-      // console.log(patient);
       if (patient) {
           Object.keys(patient).forEach((key) => {
         if (patient[key]) {
@@ -51,8 +73,6 @@ function PatientFormPage() {
   const onSubmit = handleSubmit(async (data)=>{
    
     const fechaNacimiento = dayjs(data.fechaNacimiento).format("YYYY-MM-DD");
-    // const edad = dayjs().diff(dayjs(data.fechaNacimiento), "year");
-    // const dataWithAge = {...data,edad};
     const { edad, ...patientData } = {...data,fechaNacimiento};
     console.log("datos q se van a enviar",data)
     try {
@@ -70,13 +90,12 @@ function PatientFormPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-100px)] items-start justify-center py-10">
-    <div className="bg-zinc-800 max-w-md w-full p-8 rounded-md shadow-md">
+    <div className="bg-zinc-800 max-w-2xl w-full p-8 rounded-md shadow-md">
       <h1 className="text-2xl font-bold mb-6">
         {params.id ? "Editar Paciente" : "Registrar Paciente"}
       </h1>
-      <form onSubmit={onSubmit} className="grid grid-cols-2 gap-4">
+      <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        
         <input 
           type="text"  
           placeholder="Nombre Completo"
@@ -84,7 +103,7 @@ function PatientFormPage() {
           className='col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md'
           autoFocus
           />
-          {formErrors.nombre && <span className="text-red-400 text-sm">{formErrors.nombre.message}</span>} 
+          {formErrors.nombre && <span className="text-red-400 text-sm col-span-1">{formErrors.nombre.message}</span>} 
 
           <input
             type="text"
@@ -92,7 +111,7 @@ function PatientFormPage() {
             {...register("apellido", { required: "El apellido es obligatorio" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
             />
-          {formErrors.apellido && <span className="text-red-400 text-sm">{formErrors.apellido.message}</span>} 
+          {formErrors.apellido && <span className="text-red-400 text-sm col-span-1">{formErrors.apellido.message}</span>} 
 
           <input
             type="text"
@@ -100,10 +119,10 @@ function PatientFormPage() {
             {...register("cedula", { required: "La cédula es obligatoria" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
             />
-            {formErrors.cedula && <span className="text-red-400 text-sm">{formErrors.cedula.message}</span>} 
+            {formErrors.cedula && <span className="text-red-400 text-sm col-span-1">{formErrors.cedula.message}</span>} 
 
             {errors.some(e => e.toLowerCase().includes("cédula")) && (
-              <span className="text-red-400 text-sm mt-1">
+              <span className="text-red-400 text-sm col-span-2">
                 {errors.find(e => e.toLowerCase().includes("cédula"))}
               </span>
             )}
@@ -154,17 +173,11 @@ function PatientFormPage() {
   )}
 />
 
-
-
-
-
-
           {formErrors.fechaNacimiento && (
-            <span className="text-red-400 text-sm mt-1 col-span-2">
+            <span className="text-red-400 text-sm col-span-2">
               {formErrors.fechaNacimiento.message}
             </span>
           )}
-
 
           <select
             {...register("sexo",{ required: "Debe seleccionar un sexo" })}
@@ -174,7 +187,7 @@ function PatientFormPage() {
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
           </select>
-          {formErrors.sexo && <span className="text-red-400 text-sm">{formErrors.sexo.message}</span>} 
+          {formErrors.sexo && <span className="text-red-400 text-sm col-span-1">{formErrors.sexo.message}</span>} 
 
           <input
             type="text"
@@ -182,7 +195,7 @@ function PatientFormPage() {
             {...register("telefonoContacto",{ required: "Teléfono de contacto obligatorio" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
           />
-          {formErrors.telefonoContacto && <span className="text-red-400 text-sm">{formErrors.telefonoContacto.message}</span>} 
+          {formErrors.telefonoContacto && <span className="text-red-400 text-sm col-span-1">{formErrors.telefonoContacto.message}</span>} 
 
           <input
             type="text"
@@ -190,7 +203,7 @@ function PatientFormPage() {
             {...register("telefonoEmergencia",{ required: "Teléfono de emergencia obligatorio" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
           />
-          {formErrors.telefonoEmergencia && <span className="text-red-400 text-sm">{formErrors.telefonoEmergencia.message}</span>} 
+          {formErrors.telefonoEmergencia && <span className="text-red-400 text-sm col-span-1">{formErrors.telefonoEmergencia.message}</span>} 
 
           <input
             type="text"
@@ -198,30 +211,42 @@ function PatientFormPage() {
             {...register("direccion",{ required: "Dirección obligatoria" })}
             className="col-span-2 bg-zinc-700 text-white px-4 py-2 rounded-md"
           />
-          {formErrors.direccion && <span className="text-red-400 text-sm">{formErrors.direccion.message}</span>} 
+          {formErrors.direccion && <span className="text-red-400 text-sm col-span-2">{formErrors.direccion.message}</span>} 
 
-          <input
-            type="text"
-            placeholder="Carrera"
+          {/* Select para Carrera */}
+          <select
             {...register("carrera",{ required: "Carrera obligatoria" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
-          />
-          {formErrors.carrera && <span className="text-red-400 text-sm">{formErrors.carrera.message}</span>} 
+          >
+            <option value="">Seleccione carrera</option>
+            {carreras.map((carrera, index) => (
+              <option key={index} value={carrera}>
+                {carrera}
+              </option>
+            ))}
+          </select>
+          {formErrors.carrera && <span className="text-red-400 text-sm col-span-1">{formErrors.carrera.message}</span>} 
 
-          <input
-            type="text"
-            placeholder="Grupo sanguíneo"
+          {/* Select para Grupo Sanguíneo */}
+          <select
             {...register("grupoSanguineo",{ required: "Grupo sanguíneo obligatorio" })}
             className="col-span-1 bg-zinc-700 text-white px-4 py-2 rounded-md"
-          />
-          {formErrors.grupoSanguineo && <span className="text-red-400 text-sm">{formErrors.grupoSanguineo.message}</span>} 
+          >
+            <option value="">Seleccione tipo de sangre</option>
+            {tiposSangre.map((tipo, index) => (
+              <option key={index} value={tipo}>
+                {tipo}
+              </option>
+            ))}
+          </select>
+          {formErrors.grupoSanguineo && <span className="text-red-400 text-sm col-span-1">{formErrors.grupoSanguineo.message}</span>} 
 
           <textarea
             placeholder="Motivo de la consulta"
             {...register("motivoConsulta",{ required: "Motivo de consulta obligatorio" })}
             className="col-span-2 bg-zinc-700 text-white px-4 py-2 rounded-md"
           ></textarea>
-            {formErrors.motivoConsulta && <span className="text-red-400 text-sm">{formErrors.motivoConsulta.message}</span>} 
+            {formErrors.motivoConsulta && <span className="text-red-400 text-sm col-span-2">{formErrors.motivoConsulta.message}</span>} 
           <textarea
             placeholder="Alergias"
             {...register("alergias")}

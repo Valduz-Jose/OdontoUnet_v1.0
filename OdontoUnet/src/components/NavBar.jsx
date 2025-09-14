@@ -22,6 +22,7 @@ function NavBar() {
     success: "bg-green-500 hover:bg-green-600",
     warning: "bg-purple-500 hover:bg-purple-600",
     danger: "bg-red-500 hover:bg-red-600",
+    info: "bg-blue-500 hover:bg-blue-600",
   };
 
   return (
@@ -29,7 +30,7 @@ function NavBar() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo / Título */}
         <Link
-          to={isAuthenticated ? "/patients" : "/"}
+          to={isAuthenticated ? "/" : "/"}
           className="text-2xl font-bold tracking-wide"
         >
           Sistema Odontológico
@@ -70,11 +71,19 @@ function NavBar() {
                   </li>
                   <li>
                     <Link
-                      to="/finanzas"
-                      className={`${baseBtn} ${btnStyles.secondary}`}
+                      to="/carousel-admin"
+                      className={`${baseBtn} ${btnStyles.info}`}
                     >
-                      Finanzas
+                      Carrusel
                     </Link>
+                    <li>
+                    <Link
+                      to="/patients"
+                      className={`${baseBtn} ${btnStyles.success}`}
+                    >
+                      Pacientes
+                    </Link>
+                  </li>
                   </li>
                 </>
               )}
@@ -108,6 +117,16 @@ function NavBar() {
                   </li>
                 </>
               )}
+
+              {/* Perfil - Para todos los usuarios autenticados */}
+              <li>
+                <Link
+                  to="/profile"
+                  className={`${baseBtn} ${btnStyles.info}`}
+                >
+                  Perfil
+                </Link>
+              </li>
 
               {/* Logout */}
               <li>
@@ -171,11 +190,19 @@ function NavBar() {
                   </li>
                   <li>
                     <Link
-                      to="/finanzas"
+                      to="/carousel-admin"
                       onClick={() => setIsOpen(false)}
-                      className={`${baseBtn} ${btnStyles.secondary} block`}
+                      className={`${baseBtn} ${btnStyles.info} block`}
                     >
-                      Finanzas
+                      Carrusel
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/patients"
+                      className={`${baseBtn} ${btnStyles.success} block`}
+                    >
+                      Pacientes
                     </Link>
                   </li>
                 </>
@@ -212,6 +239,16 @@ function NavBar() {
                   </li>
                 </>
               )}
+
+              <li>
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className={`${baseBtn} ${btnStyles.info} block`}
+                >
+                  Perfil
+                </Link>
+              </li>
 
               <li>
                 <button

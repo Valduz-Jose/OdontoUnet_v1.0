@@ -24,19 +24,3 @@ function PatientPage() {
 
 export default PatientPage;
 
-// Ingenieria en Informatica
-// Ingenieria Industrial
-// Ingenieria Electronica
-// Ingenieria Mecanica
-// Ingenieria Produccion Animal
-// Ingenieria Agroindustrial
-// Ingenieria Agronomica
-// Ingenieria Ambiental
-// Ingenieria civil 
-// Arquitectura 
-// Licenciatura en Musica 
-// Licenciatura en Psicologia 
-// TSU Entrenamiento Deportivo 
-// Personal Docente 
-// Personal Obrero 
-// Personal Administrativo
