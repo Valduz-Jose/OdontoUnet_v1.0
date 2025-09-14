@@ -79,21 +79,16 @@ function NuevaCitaPage() {
       // Obtener el odontograma más reciente del paciente
       let odontogramaActual = {};
 
-      // 1. El odontograma actual del paciente ES el estado más reciente
-      console.log("Odontograma del paciente:", patient.odontograma);
-      
       if (patient.odontograma && patient.odontograma.length > 0) {
         // Usar el odontograma del paciente (que debería estar actualizado)
         patient.odontograma.forEach(d => {
           odontogramaActual[d.numero] = d.estado;
         });
-        console.log("Odontograma cargado desde paciente:", odontogramaActual);
       } else {
         // Si no hay odontograma, inicializar todos como "Sano"
         for (let i = 1; i <= teethCount; i++) {
           odontogramaActual[i] = "Sano";
         }
-        console.log("Odontograma inicializado como 'Sano'");
       }
 
       setCitaData(prev => ({
@@ -259,8 +254,8 @@ function NuevaCitaPage() {
     : [];
 
   return (
-    <div className="min-h-screen p-6 bg-[#202020] text-gray-100 flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-10 text-blue-500">Nueva Cita</h1>
+    <div className="min-h-screen p-6 bg-pastel-mint text-pastel-primary flex flex-col items-center">
+      <h1 className="text-4xl font-bold mb-10 text-pastel-primary">Nueva Cita</h1>
 
       {/* Buscador de pacientes */}
       {!selectedPatient && (
@@ -270,18 +265,18 @@ function NuevaCitaPage() {
             placeholder="Buscar paciente por nombre, apellido o cédula..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-pastel w-full p-3 rounded"
           />
           {filteredPatients.length > 0 && (
-            <ul className="absolute w-full max-h-64 overflow-y-auto bg-zinc-800 border border-gray-700 rounded mt-1 shadow-xl z-50">
+            <ul className="absolute w-full max-h-64 overflow-y-auto card-pastel border border-pastel-mint-dark rounded mt-1 shadow-xl z-50">
               {filteredPatients.map(p => (
                 <li
                   key={p._id}
                   onClick={() => handlePatientSelect(p)}
-                  className="px-4 py-3 cursor-pointer hover:bg-zinc-700 flex justify-between"
+                  className="px-4 py-3 cursor-pointer hover:bg-pastel-mint-dark flex justify-between transition-pastel"
                 >
                   <span>{p.nombre} {p.apellido}</span>
-                  <span className="text-gray-400 text-sm">{p.cedula}</span>
+                  <span className="text-pastel-muted text-sm">{p.cedula}</span>
                 </li>
               ))}
             </ul>
@@ -291,17 +286,17 @@ function NuevaCitaPage() {
 
       {/* Formulario y odontograma */}
       {selectedPatient && (
-        <div className="bg-zinc-900 p-6 rounded shadow-xl w-full max-w-4xl mt-6 flex flex-col gap-6">
+        <div className="card-pastel p-6 rounded shadow-xl w-full max-w-4xl mt-6 flex flex-col gap-6">
           <button
             onClick={handleDeselectPatient}
-            className="self-start px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
+            className="self-start btn-pastel-secondary px-4 py-2 rounded transition-pastel"
           >
             ← Buscar otro paciente
           </button>
 
           {/* Datos del paciente */}
-          <h2 className="text-2xl font-semibold text-gray-200">Datos del paciente</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-100">
+          <h2 className="text-2xl font-semibold text-pastel-primary">Datos del paciente</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-pastel-secondary">
             <p><strong>Nombre:</strong> {selectedPatient.nombre} {selectedPatient.apellido}</p>
             <p><strong>Cédula:</strong> {selectedPatient.cedula}</p>
             <p><strong>Edad:</strong> {selectedPatient.edad}</p>
@@ -315,19 +310,19 @@ function NuevaCitaPage() {
 
           {/* Odontograma */}
           <div>
-            <h2 className="text-2xl font-semibold text-gray-200 mb-4">Odontograma interactivo</h2>
-            <p className="text-gray-400 text-sm mb-2">Haz clic en los dientes para cambiar su estado</p>
+            <h2 className="text-2xl font-semibold text-pastel-primary mb-4">Odontograma interactivo</h2>
+            <p className="text-pastel-muted text-sm mb-2">Haz clic en los dientes para cambiar su estado</p>
             <canvas
               ref={canvasRef}
               width={16 * (toothSize + toothSpacing) + 40}
               height={120}
-              className="bg-zinc-800 rounded cursor-pointer border border-gray-600"
+              className="bg-pastel-blue rounded cursor-pointer border border-pastel-mint-dark"
               onClick={handleCanvasClick}
             />
           </div>
 
           {/* Formulario de cita */}
-          <h2 className="text-2xl font-semibold text-gray-200 mt-4">Datos de la cita</h2>
+          <h2 className="text-2xl font-semibold text-pastel-primary mt-4">Datos de la cita</h2>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <input
               name="motivo"
@@ -335,7 +330,7 @@ function NuevaCitaPage() {
               onChange={handleChange}
               placeholder="Motivo de la cita"
               required
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+              className="input-pastel w-full p-3 rounded"
             />
             <textarea
               name="observaciones"
@@ -343,7 +338,7 @@ function NuevaCitaPage() {
               onChange={handleChange}
               placeholder="Observaciones"
               rows="3"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+              className="input-pastel w-full p-3 rounded"
             />
             <input
               type="number"
@@ -353,22 +348,22 @@ function NuevaCitaPage() {
               placeholder="Monto (opcional)"
               min="0"
               step="0.01"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+              className="input-pastel w-full p-3 rounded"
             />
             <input
               name="referenciaPago"
               value={citaData.referenciaPago}
               onChange={handleChange}
               placeholder="Número de referencia de pago (opcional)"
-              className="w-full p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+              className="input-pastel w-full p-3 rounded"
             />
 
             {/* Tratamientos */}
             <div className="mt-4">
-              <label className="block mb-2 font-semibold">Tratamientos realizados:</label>
+              <label className="block mb-2 font-semibold text-pastel-primary">Tratamientos realizados:</label>
               <div className="flex gap-2">
                 <select
-                  className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+                  className="input-pastel flex-1 p-3 rounded"
                   onChange={(e) => handleAgregarTratamiento(e.target.value)}
                   value=""
                 >
@@ -383,12 +378,12 @@ function NuevaCitaPage() {
               {tratamientosUsados.length > 0 && (
                 <ul className="mt-2 space-y-2">
                   {tratamientosUsados.map((t, i) => (
-                    <li key={i} className="flex justify-between items-center bg-zinc-700 p-2 rounded">
+                    <li key={i} className="flex justify-between items-center bg-pastel-blue p-2 rounded">
                       <span>{t}</span>
                       <button
                         type="button"
                         onClick={() => handleQuitarTratamiento(t)}
-                        className="px-2 py-1 bg-red-600 rounded hover:bg-red-700"
+                        className="btn-pastel-danger px-2 py-1 rounded transition-pastel"
                       >
                         Quitar
                       </button>
@@ -400,10 +395,10 @@ function NuevaCitaPage() {
 
             {/* Insumos */}
             <div>
-              <label className="block mb-2 font-semibold">Insumos utilizados:</label>
+              <label className="block mb-2 font-semibold text-pastel-primary">Insumos utilizados:</label>
               <div className="flex flex-col md:flex-row gap-2 md:items-end">
                 <select
-                  className="flex-1 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+                  className="input-pastel flex-1 p-3 rounded"
                   value={insumoSeleccionado?._id || ''}
                   onChange={(e) => {
                     const insumo = insumosDisponibles.find(i => i._id === e.target.value);
@@ -423,29 +418,29 @@ function NuevaCitaPage() {
                   value={cantidadInsumo}
                   onChange={(e) => setCantidadInsumo(Number(e.target.value))}
                   placeholder="Cantidad"
-                  className="w-32 p-3 border border-gray-700 rounded bg-zinc-800 text-gray-100"
+                  className="input-pastel w-32 p-3 rounded"
                 />
                 <button
                   type="button"
                   onClick={handleAgregarInsumo}
                   disabled={!insumoSeleccionado || cantidadInsumo <= 0}
-                  className="px-4 py-3 bg-blue-600 rounded hover:bg-blue-700 text-white disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  className="btn-pastel-primary px-4 py-3 rounded transition-pastel disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Agregar
                 </button>
               </div>
 
               {insumosUsados.length > 0 && (
-                <div className="mt-4 bg-zinc-800 p-4 rounded">
-                  <h3 className="font-semibold mb-2">Insumos a utilizar:</h3>
+                <div className="mt-4 card-pastel p-4 rounded">
+                  <h3 className="font-semibold mb-2 text-pastel-primary">Insumos a utilizar:</h3>
                   <ul className="space-y-2">
                     {insumosUsados.map((i, index) => (
-                      <li key={index} className="flex justify-between items-center bg-zinc-700 p-2 rounded">
+                      <li key={index} className="flex justify-between items-center bg-pastel-blue p-2 rounded">
                         <span>{i.nombre} - Cantidad: {i.cantidadUsada}</span>
                         <button
                           type="button"
                           onClick={() => handleQuitarInsumo(index)}
-                          className="px-2 py-1 bg-red-600 rounded hover:bg-red-700"
+                          className="btn-pastel-danger px-2 py-1 rounded transition-pastel"
                         >
                           Quitar
                         </button>
@@ -458,7 +453,7 @@ function NuevaCitaPage() {
 
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4 font-semibold"
+              className="btn-pastel-primary px-6 py-3 rounded mt-4 font-semibold transition-pastel"
             >
               Crear Cita
             </button>

@@ -2,12 +2,14 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../context/Auth.Context";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { Mail, Lock, LogIn, AlertCircle } from "lucide-react";
+
 function LoginPage() {
   const {register, handleSubmit, formState:{errors}} = useForm();
   const {signin, errors: signinErrors, isAuthenticated, user} = useAuth();
   const navigate = useNavigate()
+
   const onsubmit = handleSubmit((data)=>{
-    // console.log(data);
     signin(data);
   });
 
@@ -22,33 +24,80 @@ function LoginPage() {
   },[isAuthenticated])
 
   return (
-    <div className="flex h-[calc(100vh-100px)] items-center justify-center">
-      <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
-        {
-        signinErrors.map((error,i)=>(
-          <div className="bg-red-500 p-2 text-white text-center m-2" key={i}>
-            {error}
+    <div className="min-h-screen bg-pastel-mint flex items-center justify-center p-6">
+      <div className="card-pastel max-w-md w-full p-8">
+        
+        {/* Errores de autenticación */}
+        {signinErrors.map((error,i)=>(
+          <div key={i} className="bg-pastel-pink border border-red-300 p-4 rounded-lg mb-4 flex items-center gap-3">
+            <AlertCircle className="text-red-600 flex-shrink-0" size={20} />
+            <span className="text-red-700">{error}</span>
           </div>
-        ))
-      }
-        <h1 className="text-3xl font-bold my-2">Login</h1>
-        <form onSubmit={onsubmit}>
-            
-            <input type="email" {...register("email",{required:true})} className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2" placeholder="Email"/>
-            {
-              errors.email && <p className="text-red-500">Email is Required</p>
-            }
-            <input type="password" {...register("password",{required:true})} className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2" placeholder="Password"/>
-            {
-              errors.password && <p className="text-red-500">Password is Required</p>
-            }
-            <button type="submit" className="bg-sky-500 text-white px-4 py-2 rounded-md my-2">
-                Iniciar Sesion
-            </button>
+        ))}
+
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-pastel-primary mb-2">Iniciar Sesión</h1>
+          <p className="text-pastel-secondary">Accede a tu cuenta del sistema odontológico</p>
+        </div>
+
+        <form onSubmit={onsubmit} className="space-y-6">
+          <div>
+            <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
+              <Mail className="mr-2" size={16} />
+              Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              {...register("email",{required:true})} 
+              className="input-pastel w-full p-4"
+              placeholder="tu@email.com"
+            />
+            {errors.email && (
+              <p className="text-red-600 text-sm mt-1">El email es obligatorio</p>
+            )}
+          </div>
+
+          <div>
+            <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
+              <Lock className="mr-2" size={16} />
+              Contraseña
+            </label>
+            <input 
+              type="password" 
+              {...register("password",{required:true})} 
+              className="input-pastel w-full p-4"
+              placeholder="Tu contraseña"
+            />
+            {errors.password && (
+              <p className="text-red-600 text-sm mt-1">La contraseña es obligatoria</p>
+            )}
+          </div>
+
+          <button 
+            type="submit" 
+            className="btn-pastel-primary w-full px-6 py-4 rounded-lg font-semibold transition-pastel flex items-center justify-center gap-2"
+          >
+            <LogIn size={18} />
+            Iniciar Sesión
+          </button>
         </form>
-        <p className="flex gap-x-2 justify-between">
-          No tienes una cuenta? <Link to="/register" className="text-sky-500"> Resgistrarse</Link>
-        </p>
+
+        <div className="mt-8 text-center">
+          <p className="text-pastel-secondary">
+            ¿No tienes una cuenta?{' '}
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+              Regístrate aquí
+            </Link>
+          </p>
+        </div>
+
+        {/* Información adicional */}
+        <div className="mt-8 p-4 bg-pastel-blue rounded-lg">
+          <h3 className="font-semibold text-pastel-primary mb-2">Sistema Odontológico UNET</h3>
+          <p className="text-sm text-pastel-secondary">
+            Plataforma integral para la gestión de pacientes, citas e historiales clínicos.
+          </p>
+        </div>
       </div>
     </div>
   )

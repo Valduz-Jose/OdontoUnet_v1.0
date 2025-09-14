@@ -152,20 +152,26 @@ function InsumosPage() {
     setShowRestockForm(false);
   };
 
-  if (loading) return <div className="text-center py-8 text-white">Cargando insumos...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-pastel-mint p-6 flex items-center justify-center">
+        <div className="text-pastel-primary">Cargando insumos...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#202020] text-white p-6">
+    <div className="min-h-screen bg-pastel-mint p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h1 className="text-3xl font-bold text-blue-500">Gestión de Insumos</h1>
+          <h1 className="text-3xl font-bold text-pastel-primary">Gestión de Insumos</h1>
           <div className="flex gap-3">
             <button
               onClick={() => {
                 setShowRestockForm(!showRestockForm);
                 if (showForm) setShowForm(false);
               }}
-              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="btn-pastel-success px-4 py-2 rounded-lg font-semibold transition-pastel"
             >
               {showRestockForm ? 'Cancelar' : 'Reabastecer'}
             </button>
@@ -174,7 +180,7 @@ function InsumosPage() {
                 setShowForm(!showForm);
                 if (showRestockForm) setShowRestockForm(false);
               }}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="btn-pastel-primary px-4 py-2 rounded-lg font-semibold transition-pastel"
             >
               {showForm ? 'Cancelar' : 'Nuevo Insumo'}
             </button>
@@ -183,17 +189,17 @@ function InsumosPage() {
 
         {/* Formulario para reabastecer insumos */}
         {showRestockForm && (
-          <div className="bg-zinc-900 p-6 rounded-lg mb-8 border border-green-500">
-            <h2 className="text-xl font-semibold mb-4 text-green-400">Reabastecer Insumo Existente</h2>
+          <div className="card-pastel p-6 rounded-lg mb-8 bg-pastel-green border border-pastel-green-dark">
+            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Reabastecer Insumo Existente</h2>
             <form onSubmit={handleRestock} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Seleccionar Insumo *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Seleccionar Insumo *</label>
                 <select
                   name="insumoId"
                   value={restockData.insumoId}
                   onChange={handleRestockChange}
                   required
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="input-pastel w-full p-3 rounded"
                 >
                   <option value="">Seleccionar insumo...</option>
                   {insumos
@@ -207,7 +213,7 @@ function InsumosPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Cantidad a Agregar *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Cantidad a Agregar *</label>
                 <input
                   type="number"
                   name="cantidadAAgregar"
@@ -215,7 +221,7 @@ function InsumosPage() {
                   onChange={handleRestockChange}
                   required
                   min="1"
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="input-pastel w-full p-3 rounded"
                   placeholder="Ej: 25"
                 />
               </div>
@@ -224,14 +230,14 @@ function InsumosPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-semibold transition-colors disabled:opacity-50"
+                  className="btn-pastel-success px-6 py-2 rounded font-semibold transition-pastel disabled:opacity-50"
                 >
                   {submitting ? 'Reabasteciendo...' : 'Reabastecer'}
                 </button>
                 <button
                   type="button"
                   onClick={resetRestockForm}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded font-semibold transition-colors"
+                  className="btn-pastel-secondary px-6 py-2 rounded font-semibold transition-pastel"
                 >
                   Cancelar
                 </button>
@@ -242,30 +248,30 @@ function InsumosPage() {
 
         {/* Formulario para agregar nuevo insumo */}
         {showForm && (
-          <div className="bg-zinc-900 p-6 rounded-lg mb-8 border border-blue-500">
-            <h2 className="text-xl font-semibold mb-4 text-blue-400">Agregar Nuevo Insumo</h2>
+          <div className="card-pastel p-6 rounded-lg mb-8 bg-pastel-blue border border-pastel-blue-dark">
+            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Agregar Nuevo Insumo</h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Nombre *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Nombre *</label>
                 <input
                   type="text"
                   name="nombre"
                   value={formData.nombre}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-pastel w-full p-3 rounded"
                   placeholder="Ej: Amalgama dental"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Unidad de Medida *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Unidad de Medida *</label>
                 <select
                   name="unidadMedida"
                   value={formData.unidadMedida}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-pastel w-full p-3 rounded"
                 >
                   <option value="">Seleccionar...</option>
                   <option value="unidades">Unidades</option>
@@ -279,7 +285,7 @@ function InsumosPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Cantidad Inicial *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Cantidad Inicial *</label>
                 <input
                   type="number"
                   name="cantidadDisponible"
@@ -287,13 +293,13 @@ function InsumosPage() {
                   onChange={handleInputChange}
                   required
                   min="0"
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-pastel w-full p-3 rounded"
                   placeholder="Ej: 50"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Precio Unitario (opcional)</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Precio Unitario (opcional)</label>
                 <input
                   type="number"
                   name="precioUnitario"
@@ -301,19 +307,19 @@ function InsumosPage() {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-pastel w-full p-3 rounded"
                   placeholder="Ej: 15.50"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">Descripción</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">Descripción</label>
                 <textarea
                   name="descripcion"
                   value={formData.descripcion}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full p-3 bg-zinc-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-pastel w-full p-3 rounded"
                   placeholder="Descripción detallada del insumo..."
                 />
               </div>
@@ -322,14 +328,14 @@ function InsumosPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-semibold transition-colors disabled:opacity-50"
+                  className="btn-pastel-primary px-6 py-2 rounded font-semibold transition-pastel disabled:opacity-50"
                 >
                   {submitting ? 'Creando...' : 'Crear Insumo'}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded font-semibold transition-colors"
+                  className="btn-pastel-secondary px-6 py-2 rounded font-semibold transition-pastel"
                 >
                   Cancelar
                 </button>
@@ -341,34 +347,34 @@ function InsumosPage() {
         {/* Lista de insumos */}
         {insumos.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">No hay insumos registrados</p>
+            <p className="text-xl text-pastel-secondary">No hay insumos registrados</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {insumos.map((insumo) => (
               <div
                 key={insumo._id}
-                className={`bg-zinc-900 p-6 rounded-lg shadow-md border-l-4 ${
+                className={`card-pastel p-6 rounded-lg border-l-4 ${
                   insumo.cantidadDisponible === 0 
-                    ? 'border-red-500' 
+                    ? 'border-red-400 bg-pastel-pink' 
                     : insumo.cantidadDisponible <= 5 
-                    ? 'border-yellow-500' 
-                    : 'border-green-500'
+                    ? 'border-yellow-400 bg-pastel-yellow' 
+                    : 'border-green-400 bg-pastel-green'
                 }`}
               >
-                <h3 className="text-xl font-semibold mb-3 text-white">
+                <h3 className="text-xl font-semibold mb-3 text-pastel-primary">
                   {insumo.nombre}
                 </h3>
                 
-                <div className="space-y-2 text-gray-300">
+                <div className="space-y-2 text-pastel-secondary">
                   <p><strong>Descripción:</strong> {insumo.descripcion || 'Sin descripción'}</p>
                   <p><strong>Cantidad disponible:</strong> 
                     <span className={`ml-2 font-bold ${
                       insumo.cantidadDisponible === 0 
-                        ? 'text-red-400' 
+                        ? 'text-red-600' 
                         : insumo.cantidadDisponible <= 5 
-                        ? 'text-yellow-400' 
-                        : 'text-green-400'
+                        ? 'text-yellow-600' 
+                        : 'text-green-600'
                     }`}>
                       {insumo.cantidadDisponible} {insumo.unidadMedida}
                     </span>
@@ -376,7 +382,7 @@ function InsumosPage() {
                   {insumo.precioUnitario > 0 && (
                     <p><strong>Precio unitario:</strong> ${insumo.precioUnitario}</p>
                   )}
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-pastel-muted">
                     <strong>Registrado por:</strong> {insumo.user?.username}
                   </p>
                 </div>
@@ -385,15 +391,15 @@ function InsumosPage() {
                 <div className="mt-4 flex justify-between items-center">
                   <div>
                     {insumo.cantidadDisponible === 0 ? (
-                      <span className="inline-block px-3 py-1 bg-red-600 text-white text-sm rounded-full">
+                      <span className="inline-block px-3 py-1 bg-red-500 text-white text-sm rounded-full">
                         Agotado
                       </span>
                     ) : insumo.cantidadDisponible <= 5 ? (
-                      <span className="inline-block px-3 py-1 bg-yellow-600 text-white text-sm rounded-full">
+                      <span className="inline-block px-3 py-1 bg-yellow-500 text-white text-sm rounded-full">
                         Stock bajo (≤5)
                       </span>
                     ) : (
-                      <span className="inline-block px-3 py-1 bg-green-600 text-white text-sm rounded-full">
+                      <span className="inline-block px-3 py-1 bg-green-500 text-white text-sm rounded-full">
                         Disponible
                       </span>
                     )}
@@ -406,7 +412,7 @@ function InsumosPage() {
                       setShowRestockForm(true);
                       setShowForm(false);
                     }}
-                    className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm transition-colors"
+                    className="btn-pastel-success px-3 py-1 rounded text-sm transition-pastel"
                     title="Reabastecer este insumo"
                   >
                     + Stock
@@ -418,36 +424,36 @@ function InsumosPage() {
         )}
 
         {/* Resumen general */}
-        <div className="mt-8 bg-zinc-900 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Resumen del Inventario</h2>
+        <div className="mt-8 card-pastel p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Resumen del Inventario</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="bg-green-600 p-4 rounded">
-              <p className="text-2xl font-bold">
+            <div className="bg-pastel-green p-4 rounded">
+              <p className="text-2xl font-bold text-green-700">
                 {insumos.filter(i => i.cantidadDisponible > 5).length}
               </p>
-              <p>Insumos disponibles</p>
+              <p className="text-pastel-secondary">Insumos disponibles</p>
             </div>
-            <div className="bg-yellow-600 p-4 rounded">
-              <p className="text-2xl font-bold">
+            <div className="bg-pastel-yellow p-4 rounded">
+              <p className="text-2xl font-bold text-yellow-700">
                 {insumos.filter(i => i.cantidadDisponible <= 5 && i.cantidadDisponible > 0).length}
               </p>
-              <p>Stock bajo (≤5 unidades)</p>
+              <p className="text-pastel-secondary">Stock bajo (≤5 unidades)</p>
             </div>
-            <div className="bg-red-600 p-4 rounded">
-              <p className="text-2xl font-bold">
+            <div className="bg-pastel-pink p-4 rounded">
+              <p className="text-2xl font-bold text-red-700">
                 {insumos.filter(i => i.cantidadDisponible === 0).length}
               </p>
-              <p>Agotados</p>
+              <p className="text-pastel-secondary">Agotados</p>
             </div>
           </div>
           
           {/* Explicación del criterio de stock bajo */}
-          <div className="mt-4 p-4 bg-zinc-800 rounded">
-            <p className="text-sm text-gray-400">
+          <div className="mt-4 p-4 bg-pastel-blue rounded">
+            <p className="text-sm text-pastel-secondary">
               <strong>Criterio de Stock Bajo:</strong> Insumos con 5 unidades o menos se consideran en stock bajo. 
               Esto te permite reabastecerte antes de quedarte sin existencias.
             </p>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-pastel-secondary mt-2">
               <strong>Funcionalidades:</strong> Usa "Nuevo Insumo" para agregar productos nuevos y "Reabastecer" para añadir stock a productos existentes.
             </p>
           </div>

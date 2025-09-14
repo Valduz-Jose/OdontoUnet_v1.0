@@ -1,7 +1,7 @@
 import { usePatients } from "../context/PatientContext"
 import { useAuth } from "../context/Auth.Context";
 import { Link } from "react-router-dom";
-import { Eye, Edit, Trash2, Calendar } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
@@ -104,18 +104,6 @@ function PatientCard({patient}) {
                     </span>
                 </p>
             </div>
-        </div>
-        
-        {/* Botón para ver historial de citas - más prominente */}
-        <div className="mt-4 pt-4 border-t border-pastel-mint-dark">
-            <Link 
-                to={`/paciente/${patient._id}/citas`}
-                className="btn-pastel-success w-full px-4 py-2 rounded-md transition-pastel text-center flex items-center justify-center gap-2"
-                title="Ver todas las citas de este paciente"
-            >
-                <Calendar size={16} />
-                Ver Historial de Citas
-            </Link>
         </div>
     </div>
   )
