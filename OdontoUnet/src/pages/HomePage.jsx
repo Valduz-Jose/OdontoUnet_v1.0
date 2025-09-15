@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, User, Phone, Mail, Award, MapPin, Clock, Stethoscope } from "lucide-react";
+import { Link } from "react-scroll";
 
 function HomePage() {
   // Carrusel
@@ -88,16 +89,17 @@ function HomePage() {
                   transition={{ duration: 1 }}
                 >
                   <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                    Clínica Odontológica UNET
+                    Unidad Odontológica UNET
                   </h1>
                   <p className="text-xl md:text-2xl mb-6">
                     Cuidamos tu sonrisa con excelencia y tecnología de vanguardia
                   </p>
                   <div className="flex gap-4">
-                    <button className="btn-pastel-primary px-8 py-3 rounded-lg font-semibold text-lg">
+                    <button className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition" onClick={() => document.getElementById("servicios").scrollIntoView({ behavior: "smooth" })}>
                       Conoce Nuestros Servicios
                     </button>
-                    <button className="btn-pastel-secondary px-8 py-3 rounded-lg font-semibold text-lg">
+                    <button className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition" onClick={() => document.getElementById("contacto").scrollIntoView({ behavior: "smooth" })}
+>
                       Contacto
                     </button>
                   </div>
@@ -142,7 +144,7 @@ function HomePage() {
       </div>
 
       {/* Sección de servicios */}
-      <section className="container mx-auto px-6 py-16">
+      <section id="servicios" className="container mx-auto px-6 py-16">
         <motion.h2
           className="text-3xl md:text-4xl font-bold mb-12 text-center text-pastel-primary"
           initial={{ y: -20, opacity: 0 }}
@@ -355,7 +357,7 @@ function HomePage() {
       </motion.section>
 
       {/* Footer */}
-      <footer className="bg-pastel-purple py-8 text-center">
+      <footer id="contacto" className="bg-pastel-purple py-8 text-center">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>

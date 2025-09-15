@@ -276,7 +276,28 @@ function PatientCitasPage() {
                     )}
                   </div>
                 </div>
-
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+    {[
+      { estado: "Sano", color: "#ffffff" },
+      { estado: "Cariado", color: "#f87171" },
+      { estado: "Obturado", color: "#2563eb" },
+      { estado: "Extraído", color: "#9ca3af" },
+      { estado: "Endodoncia", color: "#f97316" },
+      { estado: "Corona", color: "#a78bfa" },
+      { estado: "Fracturado", color: "#000000" },
+      { estado: "Implante", color: "#22c55e" },
+      { estado: "Sellado", color: "#38bdf8" },
+      { estado: "Ausente", color: "#eab308" },
+    ].map(({ estado, color }) => (
+      <div key={estado} className="flex items-center gap-2">
+        <span
+          className="w-6 h-6 rounded-full border border-black"
+          style={{ backgroundColor: color }}
+        ></span>
+        <span className="text-pastel-secondary text-sm">{estado}</span>
+      </div>
+    ))}
+  </div>
                 {/* Insumos usados */}
                 {modalCita.insumosUsados && modalCita.insumosUsados.length > 0 && (
                   <div className="card-pastel p-6 bg-pastel-mint">

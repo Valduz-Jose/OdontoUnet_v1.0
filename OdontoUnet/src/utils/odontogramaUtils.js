@@ -16,14 +16,14 @@ export const estadosDiente = [
 export const coloresEstados = {
   Sano: "#ffffff",        // blanco
   Cariado: "#f87171",     // rojo claro
-  Obturado: "#60a5fa",    // azul
+  Obturado: "#2563eb",    // azul
   Extraído: "#9ca3af",    // gris
-  Endodoncia: "#fbbf24",  // amarillo
+  Endodoncia: "#f97316",  // amarillo
   Corona: "#a78bfa",      // morado
   Fracturado: "#000000",  // negro
   Implante: "#22c55e",    // verde
-  Sellado: "#0ea5e9",     // celeste
-  Ausente: "#facc15"      // amarillo claro
+  Sellado: "#38bdf8",     // celeste
+  Ausente: "#eab308"      // amarillo claro
 };
 
 /**
