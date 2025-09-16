@@ -10,21 +10,26 @@ function NavBar() {
 
   // Cargar tema del localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+
     setIsDark(shouldBeDark);
-    document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
+    document.documentElement.setAttribute(
+      "data-theme",
+      shouldBeDark ? "dark" : "light"
+    );
   }, []);
 
   // Cambiar tema
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
-    const themeValue = newTheme ? 'dark' : 'light';
-    localStorage.setItem('theme', themeValue);
-    document.documentElement.setAttribute('data-theme', themeValue);
+    const themeValue = newTheme ? "dark" : "light";
+    localStorage.setItem("theme", themeValue);
+    document.documentElement.setAttribute("data-theme", themeValue);
   };
 
   const handleLogout = () => {
@@ -56,7 +61,9 @@ function NavBar() {
         <ul className="hidden md:flex gap-x-3 items-center">
           {isAuthenticated ? (
             <>
-              <li className="text-sm text-pastel-secondary">👋 Hola, {user.username}</li>
+              <li className="text-sm text-pastel-secondary">
+                👋 Hola, {user.username}
+              </li>
 
               {/* Botón Pacientes - TODOS los usuarios autenticados */}
               <li>
@@ -133,10 +140,19 @@ function NavBar() {
                       Nueva Cita
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      to="/profile"
+                      className="btn-pastel-info px-4 py-2 rounded-md font-medium transition-pastel"
+                      title="Ver y editar mi perfil"
+                    >
+                      Perfil
+                    </Link>
+                  </li>
                 </>
               )}
 
-              {/* Perfil - Para todos los usuarios autenticados */}
+              {/* Perfil - Para todos los usuarios autenticados
               <li>
                 <Link
                   to="/profile"
@@ -145,14 +161,16 @@ function NavBar() {
                 >
                   Perfil
                 </Link>
-              </li>
+              </li> */}
 
               {/* Cambiar tema */}
               <li>
                 <button
                   onClick={toggleTheme}
                   className="btn-pastel-secondary px-3 py-2 rounded-md transition-pastel"
-                  title={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+                  title={
+                    isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+                  }
                 >
                   {isDark ? <Sun size={18} /> : <Moon size={18} />}
                 </button>
@@ -176,7 +194,9 @@ function NavBar() {
                 <button
                   onClick={toggleTheme}
                   className="btn-pastel-secondary px-3 py-2 rounded-md transition-pastel"
-                  title={isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
+                  title={
+                    isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+                  }
                 >
                   {isDark ? <Sun size={18} /> : <Moon size={18} />}
                 </button>
@@ -209,7 +229,9 @@ function NavBar() {
         <ul className="md:hidden bg-pastel-blue px-4 py-4 space-y-3 border-t border-pastel-mint-dark">
           {isAuthenticated ? (
             <>
-              <li className="text-sm text-pastel-secondary">👋 Hola, {user.username}</li>
+              <li className="text-sm text-pastel-secondary">
+                👋 Hola, {user.username}
+              </li>
 
               {/* Pacientes - para todos */}
               <li>

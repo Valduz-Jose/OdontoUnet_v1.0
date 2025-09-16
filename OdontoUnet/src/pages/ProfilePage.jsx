@@ -1,25 +1,39 @@
-import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../context/Auth.Context';
-import { Camera, User, Mail, Phone, MapPin, Calendar, Briefcase, Save, AlertCircle, CheckCircle, Shield, Clock } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../context/Auth.Context";
+import {
+  Camera,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Briefcase,
+  Save,
+  AlertCircle,
+  CheckCircle,
+  Shield,
+  Clock,
+  Edit,
+} from "lucide-react";
 
 function ProfilePage() {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    telefono: '',
-    direccion: '',
-    fechaNacimiento: '',
-    especialidad: '',
-    numeroLicencia: '',
-    biografia: '',
-    foto: null
+    username: user?.username || "",
+    email: user?.email || "",
+    telefono: "",
+    direccion: "",
+    fechaNacimiento: "",
+    especialidad: "",
+    numeroLicencia: "",
+    biografia: "",
+    foto: null,
   });
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -29,25 +43,27 @@ function ProfilePage() {
   const loadProfile = async () => {
     try {
       setInitialLoad(true);
-      const response = await fetch('http://localhost:3000/api/profile', {
-        credentials: 'include'
+      const response = await fetch("http://localhost:3000/api/profile", {
+        credentials: "include",
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Datos cargados del perfil:', data);
-        
+        console.log("Datos cargados del perfil:", data);
+
         // Actualizar estado con datos del servidor
-        setProfileData(prev => ({
-          username: user?.username || '',
-          email: user?.email || '',
-          telefono: data.telefono || '',
-          direccion: data.direccion || '',
-          fechaNacimiento: data.fechaNacimiento ? data.fechaNacimiento.split('T')[0] : '',
-          especialidad: data.especialidad || '',
-          numeroLicencia: data.numeroLicencia || '',
-          biografia: data.biografia || '',
-          foto: null // Solo para nuevas subidas
+        setProfileData((prev) => ({
+          username: user?.username || "",
+          email: user?.email || "",
+          telefono: data.telefono || "",
+          direccion: data.direccion || "",
+          fechaNacimiento: data.fechaNacimiento
+            ? data.fechaNacimiento.split("T")[0]
+            : "",
+          especialidad: data.especialidad || "",
+          numeroLicencia: data.numeroLicencia || "",
+          biografia: data.biografia || "",
+          foto: null, // Solo para nuevas subidas
         }));
 
         // Configurar preview de imagen existente
@@ -55,11 +71,11 @@ function ProfilePage() {
           setPreview(`http://localhost:3000/uploads/profiles/${data.foto}`);
         }
       } else {
-        console.log('No se encontró perfil existente, usando valores por defecto');
+        console.log("No se encontró perfil existente");
       }
     } catch (error) {
-      console.error('Error al cargar perfil:', error);
-      setErrors({ general: 'Error al cargar el perfil' });
+      console.error("Error al cargar perfil:", error);
+      setErrors({ general: "Error al cargar el perfil" });
     } finally {
       setInitialLoad(false);
     }
@@ -67,10 +83,10 @@ function ProfilePage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
     // Limpiar error específico del campo
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -79,20 +95,26 @@ function ProfilePage() {
     if (file) {
       // Validar tamaño (5MB máximo)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({ ...prev, foto: 'La imagen no debe superar los 5MB' }));
+        setErrors((prev) => ({
+          ...prev,
+          foto: "La imagen no debe superar los 5MB",
+        }));
         return;
       }
 
       // Validar tipo
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
       if (!validTypes.includes(file.type)) {
-        setErrors(prev => ({ ...prev, foto: 'Solo se permiten archivos JPG, PNG o WebP' }));
+        setErrors((prev) => ({
+          ...prev,
+          foto: "Solo se permiten archivos JPG, PNG o WebP",
+        }));
         return;
       }
 
-      setProfileData(prev => ({ ...prev, foto: file }));
-      setErrors(prev => ({ ...prev, foto: '' }));
-      
+      setProfileData((prev) => ({ ...prev, foto: file }));
+      setErrors((prev) => ({ ...prev, foto: "" }));
+
       // Crear preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -105,19 +127,23 @@ function ProfilePage() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (profileData.telefono && !/^[\d\s\+\-\(\)]+$/.test(profileData.telefono)) {
-      newErrors.telefono = 'Formato de teléfono inválido';
+    if (
+      profileData.telefono &&
+      !/^[\d\s\+\-\(\)]+$/.test(profileData.telefono)
+    ) {
+      newErrors.telefono = "Formato de teléfono inválido";
     }
 
     if (profileData.email && !/\S+@\S+\.\S+/.test(profileData.email)) {
-      newErrors.email = 'Formato de email inválido';
+      newErrors.email = "Formato de email inválido";
     }
 
     if (profileData.fechaNacimiento) {
       const birthDate = new Date(profileData.fechaNacimiento);
       const today = new Date();
       if (birthDate > today) {
-        newErrors.fechaNacimiento = 'La fecha de nacimiento no puede ser futura';
+        newErrors.fechaNacimiento =
+          "La fecha de nacimiento no puede ser futura";
       }
     }
 
@@ -127,54 +153,56 @@ function ProfilePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setLoading(true);
     setErrors({});
-    setSuccessMessage('');
+    setSuccessMessage("");
 
     try {
       const formData = new FormData();
-      
+
       // Agregar todos los campos de texto
-      Object.keys(profileData).forEach(key => {
-        if (key !== 'foto' && profileData[key]) {
+      Object.keys(profileData).forEach((key) => {
+        if (key !== "foto" && profileData[key]) {
           formData.append(key, profileData[key]);
         }
       });
-      
+
       // Agregar foto si se seleccionó una nueva
-      if (profileData.foto && typeof profileData.foto === 'object') {
-        formData.append('foto', profileData.foto);
+      if (profileData.foto && typeof profileData.foto === "object") {
+        formData.append("foto", profileData.foto);
       }
 
-      console.log('Enviando datos del perfil...');
-      
-      const response = await fetch('http://localhost:3000/api/profile', {
-        method: 'PUT',
-        credentials: 'include',
-        body: formData
+      console.log("Actualizando perfil...");
+
+      const response = await fetch("http://localhost:3000/api/profile", {
+        method: "PUT",
+        credentials: "include",
+        body: formData,
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        console.log('Perfil actualizado correctamente:', result);
-        setSuccessMessage('Perfil actualizado correctamente');
-        
+        console.log("Perfil actualizado correctamente:", result);
+        setSuccessMessage("Perfil actualizado correctamente");
+
         // Recargar datos del perfil para confirmar la actualización
         setTimeout(() => {
           loadProfile();
         }, 1000);
       } else {
-        setErrors({ general: result.message || 'Error al actualizar el perfil' });
+        setErrors({
+          general: result.message || "Error al actualizar el perfil",
+        });
       }
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
-      setErrors({ general: 'Error de conexión al actualizar el perfil' });
+      console.error("Error al actualizar perfil:", error);
+      setErrors({ general: "Error de conexión al actualizar el perfil" });
     } finally {
       setLoading(false);
     }
@@ -184,7 +212,10 @@ function ProfilePage() {
     return (
       <div className="min-h-screen bg-pastel-mint p-6 flex items-center justify-center">
         <div className="card-pastel p-8 bg-pastel-blue text-center">
-          <User className="animate-pulse mx-auto mb-4 text-pastel-primary" size={48} />
+          <User
+            className="animate-pulse mx-auto mb-4 text-pastel-primary"
+            size={48}
+          />
           <p className="text-pastel-primary">Cargando perfil...</p>
         </div>
       </div>
@@ -197,14 +228,22 @@ function ProfilePage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-pastel-primary mb-2 flex items-center gap-3">
-            <User className="text-blue-600" size={36} />
-            Mi Perfil Profesional
+            <Edit className="text-blue-600" size={36} />
+            Editar Mi Perfil
           </h1>
           <p className="text-pastel-secondary">
-            Administra tu información personal y profesional
+            Actualiza tu información personal y profesional
           </p>
+          {user?.role === "admin" && (
+            <div className="mt-2 p-3 bg-pastel-purple rounded-lg flex items-center gap-2">
+              <Shield size={16} className="text-purple-600" />
+              <span className="text-purple-700 text-sm">
+                Como administrador, tu perfil es principalmente informativo
+              </span>
+            </div>
+          )}
         </div>
-        
+
         {/* Mensajes de estado */}
         {errors.general && (
           <div className="mb-6 card-pastel bg-pastel-pink border-red-300 p-4 rounded-lg flex items-center gap-3">
@@ -212,15 +251,18 @@ function ProfilePage() {
             <span className="text-red-700">{errors.general}</span>
           </div>
         )}
-        
+
         {successMessage && (
           <div className="mb-6 card-pastel bg-pastel-green border-green-300 p-4 rounded-lg flex items-center gap-3">
             <CheckCircle className="text-green-600 flex-shrink-0" size={20} />
             <span className="text-green-700">{successMessage}</span>
           </div>
         )}
-        
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        >
           {/* Sección de foto y info del sistema */}
           <div className="lg:col-span-1 space-y-6">
             {/* Foto de perfil */}
@@ -229,7 +271,7 @@ function ProfilePage() {
                 <Camera className="mr-2" size={20} />
                 Foto de Perfil
               </h2>
-              
+
               <div className="text-center">
                 <div className="relative inline-block">
                   <div className="w-48 h-48 mx-auto bg-pastel-blue rounded-full overflow-hidden border-4 border-pastel-mint-dark shadow-lg">
@@ -245,7 +287,7 @@ function ProfilePage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -255,7 +297,7 @@ function ProfilePage() {
                     <Camera size={20} />
                   </button>
                 </div>
-                
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -263,11 +305,11 @@ function ProfilePage() {
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                
+
                 {errors.foto && (
                   <p className="text-red-600 text-sm mt-2">{errors.foto}</p>
                 )}
-                
+
                 <p className="text-pastel-muted text-sm mt-4">
                   Haz clic en el ícono de cámara para cambiar tu foto
                   <br />
@@ -275,7 +317,7 @@ function ProfilePage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Información básica del sistema */}
             <div className="card-pastel p-6 bg-pastel-yellow">
               <h3 className="text-lg font-semibold mb-4 text-pastel-primary flex items-center gap-2">
@@ -287,32 +329,53 @@ function ProfilePage() {
                   <div className="space-y-3 text-sm text-pastel-secondary">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Usuario:</span>
-                      <span className="bg-pastel-blue px-3 py-1 rounded-full text-blue-700">{user?.username}</span>
+                      <span className="bg-pastel-blue px-3 py-1 rounded-full text-blue-700">
+                        {user?.username}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Email:</span>
-                      <span className="text-xs bg-pastel-green px-2 py-1 rounded">{user?.email}</span>
+                      <span className="text-xs bg-pastel-green px-2 py-1 rounded">
+                        {user?.email}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Rol:</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        user?.role === 'admin' 
-                          ? 'bg-pastel-purple text-purple-700' 
-                          : 'bg-pastel-mint text-green-700'
-                      }`}>
-                        {user?.role === 'admin' ? 'Administrador' : 'Odontólogo'}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          user?.role === "admin"
+                            ? "bg-pastel-purple text-purple-700"
+                            : "bg-pastel-mint text-green-700"
+                        }`}
+                      >
+                        {user?.role === "admin"
+                          ? "Administrador"
+                          : "Odontólogo"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Miembro desde:</span>
                       <span className="flex items-center gap-1 text-xs">
                         <Clock size={12} />
-                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES') : 'N/A'}
+                        {user?.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString("es-ES")
+                          : "N/A"}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Nota informativa */}
+            <div className="card-pastel p-4 bg-pastel-green">
+              <h4 className="font-semibold text-pastel-primary mb-2 flex items-center gap-2">
+                📝 Perfil Creado
+              </h4>
+              <p className="text-sm text-pastel-secondary">
+                Tu perfil ya fue creado durante el registro. Aquí puedes
+                actualizar tu información cuando sea necesario.
+              </p>
             </div>
           </div>
 
@@ -321,16 +384,16 @@ function ProfilePage() {
             <div className="card-pastel p-6 bg-pastel-blue">
               <h2 className="text-xl font-semibold mb-6 flex items-center text-pastel-primary">
                 <User className="mr-2" size={20} />
-                Información Personal y Profesional
+                Actualizar Información
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Información de contacto */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-medium text-pastel-primary border-b border-pastel-mint-dark pb-2">
                     📞 Contacto
                   </h3>
-                  
+
                   <div>
                     <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
                       <Phone className="mr-2" size={16} />
@@ -345,7 +408,9 @@ function ProfilePage() {
                       placeholder="Ej: +58 414 123 4567"
                     />
                     {errors.telefono && (
-                      <p className="text-red-600 text-sm mt-1">{errors.telefono}</p>
+                      <p className="text-red-600 text-sm mt-1">
+                        {errors.telefono}
+                      </p>
                     )}
                   </div>
 
@@ -377,7 +442,9 @@ function ProfilePage() {
                       className="input-pastel w-full p-3"
                     />
                     {errors.fechaNacimiento && (
-                      <p className="text-red-600 text-sm mt-1">{errors.fechaNacimiento}</p>
+                      <p className="text-red-600 text-sm mt-1">
+                        {errors.fechaNacimiento}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -388,7 +455,7 @@ function ProfilePage() {
                     🩺 Información Profesional
                   </h3>
 
-                  {user?.role === 'odontologo' ? (
+                  {user?.role === "odontologo" ? (
                     <>
                       <div>
                         <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
@@ -402,11 +469,15 @@ function ProfilePage() {
                           className="input-pastel w-full p-3"
                         >
                           <option value="">Seleccionar especialidad</option>
-                          <option value="Odontología General">Odontología General</option>
+                          <option value="Odontología General">
+                            Odontología General
+                          </option>
                           <option value="Ortodoncia">Ortodoncia</option>
                           <option value="Endodoncia">Endodoncia</option>
                           <option value="Periodoncia">Periodoncia</option>
-                          <option value="Odontopediatría">Odontopediatría</option>
+                          <option value="Odontopediatría">
+                            Odontopediatría
+                          </option>
                           <option value="Cirugía Oral">Cirugía Oral</option>
                           <option value="Prostodoncia">Prostodoncia</option>
                           <option value="Patología Oral">Patología Oral</option>
@@ -429,10 +500,14 @@ function ProfilePage() {
                       </div>
                     </>
                   ) : (
-                    <div className="card-pastel p-4 bg-pastel-green text-center">
-                      <Shield className="mx-auto mb-2 text-green-600" size={24} />
-                      <p className="text-green-700 text-sm">
-                        Como administrador, puedes gestionar el sistema completo
+                    <div className="card-pastel p-4 bg-pastel-purple text-center">
+                      <Shield
+                        className="mx-auto mb-2 text-purple-600"
+                        size={24}
+                      />
+                      <p className="text-purple-700 text-sm">
+                        Como administrador del sistema, tu especialidad es la
+                        gestión completa
                       </p>
                     </div>
                   )}
@@ -454,10 +529,12 @@ function ProfilePage() {
                       onChange={handleInputChange}
                       rows="5"
                       className="input-pastel w-full p-3"
-                      placeholder="Cuéntanos sobre ti, tu experiencia, especialidades y enfoque profesional..."
+                      placeholder="Actualiza tu experiencia, especialidades y enfoque profesional..."
                     />
                     <p className="text-xs text-pastel-muted mt-1">
-                      Esta información será visible en la página principal para los visitantes
+                      {user?.role === "odontologo"
+                        ? "Esta información es visible en la página principal para los visitantes"
+                        : "Como administrador, esta información es principalmente interna"}
                     </p>
                   </div>
                 </div>
@@ -471,7 +548,7 @@ function ProfilePage() {
                   className="btn-pastel-primary px-8 py-4 rounded-lg font-semibold transition-pastel flex items-center gap-3 disabled:opacity-50 text-lg"
                 >
                   <Save size={20} />
-                  {loading ? 'Guardando cambios...' : 'Guardar Cambios'}
+                  {loading ? "Guardando cambios..." : "Actualizar Perfil"}
                 </button>
               </div>
             </div>
@@ -481,18 +558,35 @@ function ProfilePage() {
         {/* Información adicional */}
         <div className="mt-8 card-pastel p-6 bg-pastel-green">
           <h3 className="text-lg font-semibold text-pastel-primary mb-4 flex items-center gap-2">
-            💡 Consejos para tu Perfil
+            💡 Consejos para Mantener tu Perfil
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-pastel-secondary">
             <ul className="space-y-2">
-              <li>• <strong>Foto profesional:</strong> Una buena foto aumenta la confianza de los pacientes</li>
-              <li>• <strong>Información completa:</strong> Completa todos los campos para un perfil más profesional</li>
-              <li>• <strong>Biografía detallada:</strong> Describe tu experiencia y especialidades</li>
+              <li>
+                • <strong>Foto actualizada:</strong> Mantén una imagen
+                profesional reciente
+              </li>
+              <li>
+                • <strong>Información vigente:</strong> Revisa y actualiza
+                regularmente
+              </li>
+              <li>
+                • <strong>Biografía completa:</strong> Destaca tu experiencia y
+                logros
+              </li>
             </ul>
             <ul className="space-y-2">
-              <li>• <strong>Datos actualizados:</strong> Mantén tu información de contacto actualizada</li>
-              <li>• <strong>Especialización:</strong> Especifica tu área de expertise principal</li>
-              <li>• <strong>Privacidad:</strong> Tu información está protegida y es confidencial</li>
+              <li>
+                • <strong>Contacto actualizado:</strong> Asegúrate que los datos
+                sean correctos
+              </li>
+              <li>
+                • <strong>Especialización:</strong> Mantén tu área de expertise
+                actualizada
+              </li>
+              <li>
+                • <strong>Privacidad:</strong> Tu información está protegida
+              </li>
             </ul>
           </div>
         </div>
@@ -501,22 +595,34 @@ function ProfilePage() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="card-pastel p-4 bg-pastel-purple text-center">
             <div className="text-2xl mb-2">📝</div>
-            <p className="text-sm text-pastel-secondary">Completitud del perfil</p>
+            <p className="text-sm text-pastel-secondary">
+              Completitud del perfil
+            </p>
             <p className="text-lg font-bold text-purple-700">
-              {Math.round((Object.values(profileData).filter(val => val && val !== '').length / Object.keys(profileData).length) * 100)}%
+              {Math.round(
+                (Object.values(profileData).filter((val) => val && val !== "")
+                  .length /
+                  Object.keys(profileData).length) *
+                  100
+              )}
+              %
             </p>
           </div>
-          
+
           <div className="card-pastel p-4 bg-pastel-blue text-center">
-            <div className="text-2xl mb-2">🔒</div>
-            <p className="text-sm text-pastel-secondary">Seguridad</p>
-            <p className="text-lg font-bold text-blue-700">Protegido</p>
+            <div className="text-2xl mb-2">🔄</div>
+            <p className="text-sm text-pastel-secondary">
+              Última actualización
+            </p>
+            <p className="text-lg font-bold text-blue-700">Hoy</p>
           </div>
-          
+
           <div className="card-pastel p-4 bg-pastel-yellow text-center">
             <div className="text-2xl mb-2">👥</div>
             <p className="text-sm text-pastel-secondary">Visibilidad</p>
-            <p className="text-lg font-bold text-yellow-700">Pública</p>
+            <p className="text-lg font-bold text-yellow-700">
+              {user?.role === "odontologo" ? "Pública" : "Interna"}
+            </p>
           </div>
         </div>
       </div>
