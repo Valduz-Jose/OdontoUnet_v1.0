@@ -3,17 +3,16 @@ import { z } from "zod";
 export const registerSchema = z.object({
   username: z
     .string({
-      required_error: "El nombre de usuario es obligatorio",
+      required_error: "El nombre completo es obligatorio",
     })
     .min(3, {
-      message: "El nombre de usuario debe tener al menos 3 caracteres",
+      message: "El nombre completo debe tener al menos 3 caracteres",
     })
-    .max(20, {
-      message: "El nombre de usuario no puede exceder 20 caracteres",
+    .max(50, {
+      message: "El nombre completo no puede exceder 50 caracteres",
     })
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message:
-        "El nombre de usuario solo puede contener letras, números y guiones bajos",
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, {
+      message: "El nombre completo solo puede contener letras y espacios",
     }),
 
   email: z
@@ -57,6 +56,7 @@ export const registerSchema = z.object({
   especialidad: z.string().optional(),
   numeroLicencia: z.string().optional(),
   biografia: z.string().optional(),
+  diasTrabajo: z.array(z.string()).optional(), // Nuevo campo para días de trabajo
 });
 
 export const loginSchema = z.object({

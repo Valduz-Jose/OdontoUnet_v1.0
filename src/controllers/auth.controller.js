@@ -22,6 +22,7 @@ export const register = async (req, res) => {
     especialidad,
     numeroLicencia,
     biografia,
+    diasTrabajo,
   } = req.body;
 
   try {
@@ -55,6 +56,13 @@ export const register = async (req, res) => {
       especialidad: especialidad || "",
       numeroLicencia: numeroLicencia || "",
       biografia: biografia || "",
+      diasTrabajo: diasTrabajo || [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+      ], // Horario por defecto
     };
 
     const newProfile = new Profile(profileData);
@@ -188,6 +196,7 @@ export const createAdmin = async (req, res) => {
       especialidad: "Administrador del Sistema",
       numeroLicencia: "",
       biografia: "Administrador del sistema odontológico UNET",
+      diasTrabajo: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
     });
     await adminProfile.save();
 

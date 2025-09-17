@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, User, Phone, Mail, Award, MapPin, Clock, Stethoscope } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Phone,
+  Mail,
+  Award,
+  MapPin,
+  Clock,
+  Stethoscope,
+} from "lucide-react";
 import { Link } from "react-scroll";
 
 function HomePage() {
@@ -16,16 +26,18 @@ function HomePage() {
     // Cargar imágenes del carrusel
     const fetchCarouselImages = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/carousel/public');
+        const response = await fetch(
+          "http://localhost:3000/api/carousel/public"
+        );
         const data = await response.json();
         setCarouselImages(data);
       } catch (error) {
-        console.error('Error cargando imágenes del carrusel:', error);
+        console.error("Error cargando imágenes del carrusel:", error);
         // Imágenes por defecto si no hay en el servidor
         setCarouselImages([
-          { filename: 'default1.jpg', originalName: 'Consultorio 1' },
-          { filename: 'default2.jpg', originalName: 'Consultorio 2' },
-          { filename: 'default3.jpg', originalName: 'Consultorio 3' }
+          { filename: "default1.jpg", originalName: "Consultorio 1" },
+          { filename: "default2.jpg", originalName: "Consultorio 2" },
+          { filename: "default3.jpg", originalName: "Consultorio 3" },
         ]);
       }
     };
@@ -33,12 +45,12 @@ function HomePage() {
     // Cargar doctores
     const fetchDoctores = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/doctors');
+        const response = await fetch("http://localhost:3000/api/doctors");
         const data = await response.json();
-        console.log('Doctores cargados:', data);
+        console.log("Doctores cargados:", data);
         setDoctores(data);
       } catch (error) {
-        console.error('Error cargando doctores:', error);
+        console.error("Error cargando doctores:", error);
       } finally {
         setLoading(false);
       }
@@ -49,9 +61,13 @@ function HomePage() {
   }, []);
 
   const prevSlide = () =>
-    setCurrentIndex((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+    setCurrentIndex((prev) =>
+      prev === 0 ? carouselImages.length - 1 : prev - 1
+    );
   const nextSlide = () =>
-    setCurrentIndex((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) =>
+      prev === carouselImages.length - 1 ? 0 : prev + 1
+    );
 
   // Auto-avanzar carrusel cada 5 segundos
   useEffect(() => {
@@ -61,6 +77,31 @@ function HomePage() {
     }
   }, [carouselImages.length]);
 
+  const formatSchedule = (diasTrabajo, horarioInicio, horarioFin) => {
+    if (!diasTrabajo || diasTrabajo.length === 0) {
+      return "Horario por consultar";
+    }
+
+    const diasCortos = {
+      Lunes: "Lun",
+      Martes: "Mar",
+      Miércoles: "Mié",
+      Jueves: "Jue",
+      Viernes: "Vie",
+      Sábado: "Sáb",
+      Domingo: "Dom",
+    };
+
+    const diasFormateados = diasTrabajo
+      .map((dia) => diasCortos[dia] || dia)
+      .join(", ");
+    const horario = `${horarioInicio || "8:00 AM"} - ${
+      horarioFin || "5:00 PM"
+    }`;
+
+    return `${diasFormateados}: ${horario}`;
+  };
+
   return (
     <div className="bg-pastel-mint min-h-screen">
       {/* Hero con carrusel */}
@@ -69,16 +110,18 @@ function HomePage() {
           <>
             <motion.img
               key={currentIndex}
-              src={carouselImages[currentIndex].filename.startsWith('default') 
-                ? `/images/${carouselImages[currentIndex].filename}` 
-                : `http://localhost:3000/uploads/carousel/${carouselImages[currentIndex].filename}`}
+              src={
+                carouselImages[currentIndex].filename.startsWith("default")
+                  ? `/images/${carouselImages[currentIndex].filename}`
+                  : `http://localhost:3000/uploads/carousel/${carouselImages[currentIndex].filename}`
+              }
               alt={carouselImages[currentIndex].originalName}
               className="w-full h-full object-cover"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
             />
-            
+
             {/* Overlay con información */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
               <div className="container mx-auto px-6">
@@ -92,14 +135,28 @@ function HomePage() {
                     Unidad Odontológica UNET
                   </h1>
                   <p className="text-xl md:text-2xl mb-6">
-                    Cuidamos tu sonrisa con excelencia y tecnología de vanguardia
+                    Cuidamos tu sonrisa con excelencia y tecnología de
+                    vanguardia
                   </p>
                   <div className="flex gap-4">
-                    <button className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition" onClick={() => document.getElementById("servicios").scrollIntoView({ behavior: "smooth" })}>
+                    <button
+                      className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition"
+                      onClick={() =>
+                        document
+                          .getElementById("servicios")
+                          .scrollIntoView({ behavior: "smooth" })
+                      }
+                    >
                       Conoce Nuestros Servicios
                     </button>
-                    <button className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition" onClick={() => document.getElementById("contacto").scrollIntoView({ behavior: "smooth" })}
->
+                    <button
+                      className="px-8 py-3 rounded-lg font-semibold text-lg bg-white/70 text-pastel-primary hover:bg-white/90 transition"
+                      onClick={() =>
+                        document
+                          .getElementById("contacto")
+                          .scrollIntoView({ behavior: "smooth" })
+                      }
+                    >
                       Contacto
                     </button>
                   </div>
@@ -124,7 +181,7 @@ function HomePage() {
                 >
                   <ChevronRight size={28} />
                 </button>
-                
+
                 {/* Indicadores */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
                   {carouselImages.map((_, index) => (
@@ -132,7 +189,7 @@ function HomePage() {
                       key={index}
                       onClick={() => setCurrentIndex(index)}
                       className={`w-3 h-3 rounded-full transition-pastel ${
-                        index === currentIndex ? 'bg-white' : 'bg-white/50'
+                        index === currentIndex ? "bg-white" : "bg-white/50"
                       }`}
                     />
                   ))}
@@ -153,27 +210,30 @@ function HomePage() {
         >
           Nuestros Servicios
         </motion.h2>
-        
+
         <div className="grid md:grid-cols-3 gap-8">
           {[
             {
               titulo: "Odontología General",
-              descripcion: "Cuidado integral de tu salud bucal con tratamientos preventivos y correctivos",
+              descripcion:
+                "Cuidado integral de tu salud bucal con tratamientos preventivos y correctivos",
               icono: "🦷",
-              color: "bg-pastel-blue"
+              color: "bg-pastel-blue",
             },
             {
               titulo: "Ortodoncia (proximamente)",
-              descripcion: "Corrección de la posición de dientes y mandíbula para una sonrisa perfecta",
+              descripcion:
+                "Corrección de la posición de dientes y mandíbula para una sonrisa perfecta",
               icono: "😊",
-              color: "bg-pastel-green"
+              color: "bg-pastel-green",
             },
             {
               titulo: "Endodoncia",
-              descripcion: "Tratamiento de conductos radiculares para salvar dientes dañados",
+              descripcion:
+                "Tratamiento de conductos radiculares para salvar dientes dañados",
               icono: "🔧",
-              color: "bg-pastel-purple"
-            }
+              color: "bg-pastel-purple",
+            },
           ].map((servicio, i) => (
             <motion.div
               key={i}
@@ -183,7 +243,9 @@ function HomePage() {
               transition={{ duration: 0.4, delay: i * 0.2 }}
             >
               <div className="text-4xl mb-4">{servicio.icono}</div>
-              <h3 className="text-xl font-bold mb-4 text-pastel-primary">{servicio.titulo}</h3>
+              <h3 className="text-xl font-bold mb-4 text-pastel-primary">
+                {servicio.titulo}
+              </h3>
               <p className="text-pastel-secondary">{servicio.descripcion}</p>
             </motion.div>
           ))}
@@ -219,7 +281,8 @@ function HomePage() {
                 Próximamente
               </h3>
               <p className="text-pastel-secondary">
-                Nuestros doctores están actualizando sus perfiles. Pronto podrás conocer más sobre ellos.
+                Nuestros doctores están actualizando sus perfiles. Pronto podrás
+                conocer más sobre ellos.
               </p>
             </div>
           ) : (
@@ -249,9 +312,9 @@ function HomePage() {
 
                   {/* Información del doctor */}
                   <h3 className="text-xl font-bold mb-2 text-pastel-primary">
-                    Dr. {doctor.user?.username || 'Nombre no disponible'}
+                    {doctor.user?.username || "Nombre no disponible"}
                   </h3>
-                  
+
                   {doctor.especialidad && (
                     <div className="mb-4">
                       <span className="inline-flex items-center gap-1 bg-pastel-green px-3 py-1 rounded-full text-sm font-medium text-green-700">
@@ -264,9 +327,11 @@ function HomePage() {
                   {/* Biografía */}
                   {doctor.biografia ? (
                     <p className="text-pastel-secondary text-sm mb-4 italic">
-                      "{doctor.biografia.length > 120 
-                        ? doctor.biografia.substring(0, 120) + '...' 
-                        : doctor.biografia}"
+                      "
+                      {doctor.biografia.length > 120
+                        ? doctor.biografia.substring(0, 120) + "..."
+                        : doctor.biografia}
+                      "
                     </p>
                   ) : (
                     <p className="text-pastel-muted text-sm mb-4">
@@ -275,14 +340,14 @@ function HomePage() {
                   )}
 
                   {/* Información de contacto */}
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2 text-sm mb-4">
                     {doctor.user?.email && (
                       <div className="flex items-center justify-center gap-2 text-pastel-secondary">
                         <Mail size={14} />
                         <span>{doctor.user.email}</span>
                       </div>
                     )}
-                    
+
                     {doctor.telefono && (
                       <div className="flex items-center justify-center gap-2 text-pastel-secondary">
                         <Phone size={14} />
@@ -292,10 +357,17 @@ function HomePage() {
                   </div>
 
                   {/* Horarios de atención */}
-                  <div className="mt-4 pt-4 border-t border-pastel-mint-dark">
-                    <div className="flex items-center justify-center gap-2 text-pastel-secondary text-sm">
+                  <div className="pt-4 border-t border-pastel-mint-dark">
+                    <div className="flex items-center justify-center gap-2 text-pastel-secondary text-sm mb-2">
                       <Clock size={14} />
-                      <span>Lun - Vie: 8:00 AM - 5:00 PM</span>
+                      <span className="font-medium">Horario de Atención</span>
+                    </div>
+                    <div className="text-xs text-pastel-muted bg-pastel-mint p-2 rounded">
+                      {formatSchedule(
+                        doctor.diasTrabajo,
+                        doctor.horarioInicio,
+                        doctor.horarioFin
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -317,28 +389,30 @@ function HomePage() {
             Bienestar Estudiantil UNET
           </h2>
           <p className="text-pastel-secondary max-w-3xl mx-auto text-lg">
-            Promovemos la salud bucal de nuestra comunidad universitaria a través de 
-            atención odontológica integral, campañas preventivas y programas de educación 
-            en salud oral para estudiantes, docentes y personal administrativo.
+            Promovemos la salud bucal de nuestra comunidad universitaria a
+            través de atención odontológica integral, campañas preventivas y
+            programas de educación en salud oral para estudiantes, docentes y
+            personal administrativo.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-8 mt-12">
             {[
               {
                 titulo: "Atención de Calidad a Bajo Costo",
-                descripcion: "Consultas y tratamientos al alcance de toda la comunidad UNET",
-                icono: "💚"
+                descripcion:
+                  "Consultas y tratamientos al alcance de toda la comunidad UNET",
+                icono: "💚",
               },
               {
                 titulo: "Prevención",
                 descripcion: "Programas educativos y campañas de salud oral",
-                icono: "🛡️"
+                icono: "🛡️",
               },
               {
                 titulo: "Tecnología",
                 descripcion: "Equipos modernos y técnicas actualizadas",
-                icono: "⚕️"
-              }
+                icono: "⚕️",
+              },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -348,7 +422,9 @@ function HomePage() {
                 transition={{ duration: 0.5, delay: i * 0.2 }}
               >
                 <div className="text-4xl mb-4">{item.icono}</div>
-                <h3 className="text-xl font-bold mb-2 text-pastel-primary">{item.titulo}</h3>
+                <h3 className="text-xl font-bold mb-2 text-pastel-primary">
+                  {item.titulo}
+                </h3>
                 <p className="text-pastel-secondary">{item.descripcion}</p>
               </motion.div>
             ))}
@@ -368,15 +444,20 @@ function HomePage() {
                 <p>📍 UNET, San Cristóbal, Táchira</p>
               </div>
             </div>
-            
+
             <div>
-              <h4 className="font-bold mb-4 text-pastel-primary">Horarios</h4>
+              <h4 className="font-bold mb-4 text-pastel-primary">
+                Horarios Generales
+              </h4>
               <div className="space-y-2 text-pastel-secondary text-sm">
                 <p>Lunes - Viernes</p>
                 <p>8:00 AM - 12:00 PM</p>
+                <p className="text-xs text-pastel-muted">
+                  * Cada doctor tiene horarios específicos
+                </p>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-bold mb-4 text-pastel-primary">Servicios</h4>
               <div className="space-y-2 text-pastel-secondary text-sm">
@@ -389,10 +470,11 @@ function HomePage() {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-pastel-mint-dark pt-8">
             <p className="text-pastel-muted">
-              © {new Date().getFullYear()} Clínica Odontológica UNET - Todos los derechos reservados
+              © {new Date().getFullYear()} Clínica Odontológica UNET - Todos los
+              derechos reservados
             </p>
           </div>
         </div>

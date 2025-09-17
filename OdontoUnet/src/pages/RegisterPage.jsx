@@ -18,6 +18,7 @@ import {
   ChevronUp,
   Shield,
   Info,
+  Clock,
 } from "lucide-react";
 
 function RegisterPage() {
@@ -25,10 +26,23 @@ function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm();
   const { signup, isAuthenticated, errors: registerErrors, user } = useAuth();
   const navigate = useNavigate();
   const [showProfileFields, setShowProfileFields] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
+
+  const diasSemana = [
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo",
+  ];
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -40,13 +54,27 @@ function RegisterPage() {
     }
   }, [isAuthenticated]);
 
+  const handleDayChange = (day) => {
+    const updatedDays = selectedDays.includes(day)
+      ? selectedDays.filter((d) => d !== day)
+      : [...selectedDays, day];
+
+    setSelectedDays(updatedDays);
+    setValue("diasTrabajo", updatedDays);
+  };
+
   const onsubmit = handleSubmit(async (values) => {
-    signup(values);
+    // Incluir los días de trabajo seleccionados
+    const formData = {
+      ...values,
+      diasTrabajo: selectedDays,
+    };
+    signup(formData);
   });
 
   return (
     <div className="min-h-screen bg-pastel-mint flex items-center justify-center p-6">
-      <div className="card-pastel max-w-2xl w-full p-8">
+      <div className="card-pastel max-w-4xl w-full p-8">
         {/* Errores de registro */}
         {registerErrors.map((error, i) => (
           <div
@@ -67,7 +95,7 @@ function RegisterPage() {
           </p>
         </div>
 
-        <form onSubmit={onsubmit} className="space-y-6">
+        <form onSubmit={onsubmit} className="space-y-8">
           {/* Información de autenticación */}
           <div className="bg-pastel-blue p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-pastel-primary mb-4 flex items-center gap-2">
@@ -79,17 +107,17 @@ function RegisterPage() {
               <div>
                 <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
                   <User className="mr-2" size={16} />
-                  Nombre de Usuario
+                  Nombre Completo del Doctor
                 </label>
                 <input
                   type="text"
                   {...register("username", { required: true })}
                   className="input-pastel w-full p-3"
-                  placeholder="Ej: dr.rodriguez"
+                  placeholder="Dr. Juan Carlos Pérez"
                 />
                 {errors.username && (
                   <p className="text-red-600 text-sm mt-1">
-                    El nombre de usuario es obligatorio
+                    El nombre completo es obligatorio
                   </p>
                 )}
               </div>
@@ -103,7 +131,7 @@ function RegisterPage() {
                   type="email"
                   {...register("email", { required: true })}
                   className="input-pastel w-full p-3"
-                  placeholder="tu@unet.edu.ve"
+                  placeholder="doctor@unet.edu.ve"
                 />
                 {errors.email && (
                   <p className="text-red-600 text-sm mt-1">
@@ -194,7 +222,8 @@ function RegisterPage() {
             </p>
 
             {showProfileFields && (
-              <div className="space-y-4 border-t border-green-200 pt-4">
+              <div className="space-y-6 border-t border-green-200 pt-6">
+                {/* Información de contacto */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
@@ -273,6 +302,35 @@ function RegisterPage() {
                   />
                 </div>
 
+                {/* Días de trabajo */}
+                <div>
+                  <label className="flex items-center text-sm font-medium mb-3 text-pastel-primary">
+                    <Clock className="mr-2" size={16} />
+                    Días de Trabajo
+                  </label>
+                  <p className="text-xs text-pastel-secondary mb-3">
+                    Selecciona los días de la semana que trabajas en la clínica
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {diasSemana.map((day) => (
+                      <label
+                        key={day}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedDays.includes(day)}
+                          onChange={() => handleDayChange(day)}
+                          className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <span className="text-sm text-pastel-primary">
+                          {day}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <label className="flex items-center text-sm font-medium mb-2 text-pastel-primary">
                     <FileText className="mr-2" size={16} />
@@ -325,16 +383,20 @@ function RegisterPage() {
               registrarse
             </li>
             <li>
+              • <strong>Nombre completo:</strong> Usa tu nombre completo
+              profesional (ej: "Dr. Juan Carlos Pérez")
+            </li>
+            <li>
+              • <strong>Horarios de trabajo:</strong> Selecciona los días que
+              trabajas para mostrar disponibilidad
+            </li>
+            <li>
               • <strong>Perfil profesional:</strong> Puedes completarlo ahora o
               editarlo después
             </li>
             <li>
               • <strong>Acceso completo:</strong> Podrás gestionar pacientes,
               citas e inventario
-            </li>
-            <li>
-              • <strong>Privacidad:</strong> Tu información está protegida según
-              políticas UNET
             </li>
           </ul>
         </div>

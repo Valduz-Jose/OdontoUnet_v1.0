@@ -8,17 +8,23 @@ import Cita from "../models/cita.model.js";
 // Obtener perfil del usuario logueado
 export const getProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate("user", "username email role createdAt");
-    
+    const profile = await Profile.findOne({ user: req.user.id }).populate(
+      "user",
+      "username email role createdAt"
+    );
+
     if (!profile) {
       return res.json({
-        telefono: '',
-        direccion: '',
-        fechaNacimiento: '',
-        especialidad: '',
-        numeroLicencia: '',
-        biografia: '',
-        foto: null
+        telefono: "",
+        direccion: "",
+        fechaNacimiento: "",
+        especialidad: "",
+        numeroLicencia: "",
+        biografia: "",
+        foto: null,
+        diasTrabajo: [],
+        horarioInicio: "8:00 AM",
+        horarioFin: "5:00 PM",
       });
     }
 
@@ -32,16 +38,42 @@ export const getProfile = async (req, res) => {
 // Actualizar perfil del usuario logueado
 export const updateProfile = async (req, res) => {
   try {
-    const { telefono, direccion, fechaNacimiento, especialidad, numeroLicencia, biografia } = req.body;
-    
+    const {
+      telefono,
+      direccion,
+      fechaNacimiento,
+      especialidad,
+      numeroLicencia,
+      biografia,
+      diasTrabajo,
+      horarioInicio,
+      horarioFin,
+    } = req.body;
+
     let updateData = {
       telefono,
       direccion,
       fechaNacimiento: fechaNacimiento || null,
       especialidad,
       numeroLicencia,
-      biografia
+      biografia,
+      horarioInicio: horarioInicio || "8:00 AM",
+      horarioFin: horarioFin || "5:00 PM",
     };
+
+    // Procesar días de trabajo
+    if (diasTrabajo) {
+      try {
+        // Si viene como string JSON, parsearlo
+        updateData.diasTrabajo =
+          typeof diasTrabajo === "string"
+            ? JSON.parse(diasTrabajo)
+            : diasTrabajo;
+      } catch (e) {
+        // Si no es JSON válido, asumir que es un array
+        updateData.diasTrabajo = Array.isArray(diasTrabajo) ? diasTrabajo : [];
+      }
+    }
 
     // Si se subió una nueva foto
     if (req.file) {
@@ -49,12 +81,14 @@ export const updateProfile = async (req, res) => {
       const existingProfile = await Profile.findOne({ user: req.user.id });
       if (existingProfile && existingProfile.foto) {
         try {
-          await fs.unlink(path.join(process.cwd(), 'uploads/profiles', existingProfile.foto));
+          await fs.unlink(
+            path.join(process.cwd(), "uploads/profiles", existingProfile.foto)
+          );
         } catch (err) {
           console.log("No se pudo eliminar la foto anterior:", err.message);
         }
       }
-      
+
       updateData.foto = req.file.filename;
     }
 
@@ -77,8 +111,10 @@ export const getPublicProfile = async (req, res) => {
     const { id } = req.params;
     const profile = await Profile.findOne({ user: id })
       .populate("user", "username email role")
-      .select("telefono especialidad biografia foto user");
-    
+      .select(
+        "telefono especialidad biografia foto user diasTrabajo horarioInicio horarioFin"
+      );
+
     if (!profile) {
       return res.status(404).json({ message: "Perfil no encontrado" });
     }
@@ -97,13 +133,15 @@ export const getAllDoctors = async (req, res) => {
       .populate({
         path: "user",
         match: { role: "odontologo" },
-        select: "username email"
+        select: "username email",
       })
-      .select("especialidad biografia foto user");
-    
+      .select(
+        "especialidad biografia foto user diasTrabajo horarioInicio horarioFin"
+      );
+
     // Filtrar solo los que tienen user (odontólogos)
-    const validDoctors = doctors.filter(doc => doc.user);
-    
+    const validDoctors = doctors.filter((doc) => doc.user);
+
     res.json(validDoctors);
   } catch (error) {
     console.error("Error al obtener doctores:", error);
@@ -111,8 +149,7 @@ export const getAllDoctors = async (req, res) => {
   }
 };
 
-// Agregar esta función al archivo src/controllers/profile.controller.js
-
+// Obtener doctores con estadísticas para el panel de admin
 export const getDoctorsWithStats = async (req, res) => {
   try {
     // Obtener todos los usuarios con rol de odontólogo
@@ -124,15 +161,21 @@ export const getDoctorsWithStats = async (req, res) => {
       doctors.map(async (doctor) => {
         // Obtener perfil del doctor
         const profile = await Profile.findOne({ user: doctor._id })
-          .select("telefono direccion especialidad biografia foto numeroLicencia fechaNacimiento")
+          .select(
+            "telefono direccion especialidad biografia foto numeroLicencia fechaNacimiento diasTrabajo horarioInicio horarioFin"
+          )
           .lean();
 
         // Obtener estadísticas de pacientes únicos
-        const totalPacientes = await Cita.distinct('paciente', { odontologo: doctor._id });
-        
+        const totalPacientes = await Cita.distinct("paciente", {
+          odontologo: doctor._id,
+        });
+
         // Obtener total de citas
-        const totalCitas = await Cita.countDocuments({ odontologo: doctor._id });
-        
+        const totalCitas = await Cita.countDocuments({
+          odontologo: doctor._id,
+        });
+
         // Obtener última cita
         const ultimaCita = await Cita.findOne({ odontologo: doctor._id })
           .sort({ fecha: -1 })
@@ -144,7 +187,7 @@ export const getDoctorsWithStats = async (req, res) => {
           profile,
           totalPacientes: totalPacientes.length,
           totalCitas,
-          ultimaCita: ultimaCita?.fecha || null
+          ultimaCita: ultimaCita?.fecha || null,
         };
       })
     );
@@ -155,7 +198,8 @@ export const getDoctorsWithStats = async (req, res) => {
     res.json(doctorsWithStats);
   } catch (error) {
     console.error("Error al obtener estadísticas de doctores:", error);
-    res.status(500).json({ message: "Error al obtener estadísticas de doctores" });
+    res
+      .status(500)
+      .json({ message: "Error al obtener estadísticas de doctores" });
   }
 };
-
