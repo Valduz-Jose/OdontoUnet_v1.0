@@ -8,12 +8,19 @@ import Cita from "../models/cita.model.js";
 // Obtener perfil del usuario logueado
 export const getProfile = async (req, res) => {
   try {
+    console.log("🔍 DEBUG - Obteniendo perfil para usuario ID:", req.user.id);
+
     const profile = await Profile.findOne({ user: req.user.id }).populate(
       "user",
       "username email role createdAt"
     );
 
+    console.log("📋 DEBUG - Perfil encontrado en BD:", profile ? "SÍ" : "NO");
+
     if (!profile) {
+      console.log(
+        "❌ DEBUG - No se encontró perfil, devolviendo valores por defecto"
+      );
       return res.json({
         telefono: "",
         direccion: "",
@@ -28,9 +35,52 @@ export const getProfile = async (req, res) => {
       });
     }
 
-    res.json(profile);
+    // Debug detallado de los datos de la BD
+    console.log("📊 DEBUG - Datos RAW del perfil desde BD:");
+    console.log("- telefono:", profile.telefono, typeof profile.telefono);
+    console.log("- direccion:", profile.direccion, typeof profile.direccion);
+    console.log(
+      "- especialidad:",
+      profile.especialidad,
+      typeof profile.especialidad
+    );
+    console.log("- biografia:", profile.biografia, typeof profile.biografia);
+    console.log(
+      "- diasTrabajo:",
+      profile.diasTrabajo,
+      Array.isArray(profile.diasTrabajo)
+    );
+    console.log(
+      "- horarioInicio:",
+      profile.horarioInicio,
+      typeof profile.horarioInicio
+    );
+    console.log("- horarioFin:", profile.horarioFin, typeof profile.horarioFin);
+
+    // Asegurar que devolvemos todos los campos, incluso si están vacíos
+    const profileData = {
+      telefono: profile.telefono || "",
+      direccion: profile.direccion || "",
+      fechaNacimiento: profile.fechaNacimiento || "",
+      especialidad: profile.especialidad || "",
+      numeroLicencia: profile.numeroLicencia || "",
+      biografia: profile.biografia || "",
+      foto: profile.foto || null,
+      diasTrabajo: profile.diasTrabajo || [],
+      horarioInicio: profile.horarioInicio || "8:00 AM",
+      horarioFin: profile.horarioFin || "5:00 PM",
+      user: profile.user,
+    };
+
+    console.log("📤 DEBUG - Datos que se envían al frontend:");
+    console.log("- telefono:", profileData.telefono);
+    console.log("- direccion:", profileData.direccion);
+    console.log("- especialidad:", profileData.especialidad);
+    console.log("- biografia:", profileData.biografia);
+
+    res.json(profileData);
   } catch (error) {
-    console.error("Error al obtener perfil:", error);
+    console.error("❌ ERROR al obtener perfil:", error);
     res.status(500).json({ message: "Error al obtener el perfil" });
   }
 };
@@ -38,6 +88,9 @@ export const getProfile = async (req, res) => {
 // Actualizar perfil del usuario logueado
 export const updateProfile = async (req, res) => {
   try {
+    console.log("🔄 DEBUG - Datos recibidos para actualizar:", req.body);
+    console.log("📷 DEBUG - Archivo recibido:", req.file);
+
     const {
       telefono,
       direccion,
@@ -51,12 +104,12 @@ export const updateProfile = async (req, res) => {
     } = req.body;
 
     let updateData = {
-      telefono,
-      direccion,
+      telefono: telefono || "",
+      direccion: direccion || "",
       fechaNacimiento: fechaNacimiento || null,
-      especialidad,
-      numeroLicencia,
-      biografia,
+      especialidad: especialidad || "",
+      numeroLicencia: numeroLicencia || "",
+      biografia: biografia || "",
       horarioInicio: horarioInicio || "8:00 AM",
       horarioFin: horarioFin || "5:00 PM",
     };
@@ -70,9 +123,15 @@ export const updateProfile = async (req, res) => {
             ? JSON.parse(diasTrabajo)
             : diasTrabajo;
       } catch (e) {
+        console.log(
+          "⚠️ DEBUG - Error parseando diasTrabajo, usando como array:",
+          e
+        );
         // Si no es JSON válido, asumir que es un array
         updateData.diasTrabajo = Array.isArray(diasTrabajo) ? diasTrabajo : [];
       }
+    } else {
+      updateData.diasTrabajo = [];
     }
 
     // Si se subió una nueva foto
@@ -92,15 +151,36 @@ export const updateProfile = async (req, res) => {
       updateData.foto = req.file.filename;
     }
 
+    console.log("💾 DEBUG - Datos que se van a actualizar:", updateData);
+
     const profile = await Profile.findOneAndUpdate(
       { user: req.user.id },
       updateData,
       { new: true, upsert: true, runValidators: true }
     ).populate("user", "username email role createdAt");
 
-    res.json(profile);
+    console.log("✅ DEBUG - Perfil actualizado en BD:", profile ? "SÍ" : "NO");
+
+    // Devolver los datos formateados
+    const responseData = {
+      telefono: profile.telefono || "",
+      direccion: profile.direccion || "",
+      fechaNacimiento: profile.fechaNacimiento || "",
+      especialidad: profile.especialidad || "",
+      numeroLicencia: profile.numeroLicencia || "",
+      biografia: profile.biografia || "",
+      foto: profile.foto || null,
+      diasTrabajo: profile.diasTrabajo || [],
+      horarioInicio: profile.horarioInicio || "8:00 AM",
+      horarioFin: profile.horarioFin || "5:00 PM",
+      user: profile.user,
+    };
+
+    console.log("📤 DEBUG - Respuesta que se envía:", responseData);
+
+    res.json(responseData);
   } catch (error) {
-    console.error("Error al actualizar perfil:", error);
+    console.error("❌ ERROR al actualizar perfil:", error);
     res.status(500).json({ message: "Error al actualizar el perfil" });
   }
 };

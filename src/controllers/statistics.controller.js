@@ -21,6 +21,7 @@ export const getStatistics = async (req, res) => {
 
     // Asegurar que la fecha final incluya todo el día
     end.setHours(23, 59, 59, 999);
+    start.setHours(0, 0, 0, 0);
 
     console.log("Fechas procesadas:", { start, end });
 
@@ -41,17 +42,26 @@ export const getStatistics = async (req, res) => {
     // VERIFICAR CITAS EN EL PERÍODO
     const citasEnPeriodo = await Cita.find(dateFilter);
     console.log("Citas encontradas en el período:", citasEnPeriodo.length);
+    console.log(
+      "IDs de citas:",
+      citasEnPeriodo.map((c) => c._id)
+    );
 
     // 1. Pacientes atendidos (únicos en el período)
     const pacientesUnicos = await Cita.find(dateFilter).distinct("paciente");
     const pacientesAtendidos = pacientesUnicos.length;
-    console.log("Pacientes únicos:", pacientesAtendidos);
+    console.log(
+      "Pacientes únicos:",
+      pacientesAtendidos,
+      "IDs:",
+      pacientesUnicos
+    );
 
     // 2. Citas realizadas
     const citasRealizadas = citasEnPeriodo.length;
     console.log("Citas realizadas:", citasRealizadas);
 
-    // 3. Insumos más utilizados - mejorado
+    // 3. Insumos más utilizados - corregido
     let insumosUsados = [];
     try {
       insumosUsados = await Cita.aggregate([
@@ -87,58 +97,87 @@ export const getStatistics = async (req, res) => {
         { $sort: { totalUsado: -1 } },
         { $limit: 15 },
       ]);
+
+      console.log(
+        "Agregación de insumos completada:",
+        insumosUsados.length,
+        "resultados"
+      );
     } catch (error) {
       console.error("Error en agregación de insumos:", error);
+      insumosUsados = [];
     }
-    console.log("Insumos utilizados:", insumosUsados);
 
-    // 4. Días más concurridos (día de la semana)
+    // 4. Días más concurridos - corregido
     let diasMasConcurridos = [];
     try {
-      diasMasConcurridos = await Cita.aggregate([
+      const diasAgregados = await Cita.aggregate([
         { $match: dateFilter },
         {
+          $addFields: {
+            diaSemana: { $dayOfWeek: "$fecha" },
+          },
+        },
+        {
           $group: {
-            _id: { $dayOfWeek: "$fecha" }, // 1=Domingo, 2=Lunes, etc.
+            _id: "$diaSemana",
             totalCitas: { $sum: 1 },
           },
         },
         { $sort: { totalCitas: -1 } },
       ]);
 
-      // Ajustar para que 1=Lunes, 2=Martes, etc.
-      diasMasConcurridos = diasMasConcurridos
-        .map((dia) => ({
-          _id: dia._id === 1 ? 7 : dia._id - 1, // Domingo=7, Lunes=1, etc.
-          totalCitas: dia.totalCitas,
-        }))
-        .filter((dia) => dia._id >= 1 && dia._id <= 5); // Solo días laborables
+      console.log("Agregación de días completada:", diasAgregados);
+
+      // Convertir números de día a formato correcto (1=Lunes, 2=Martes, etc.)
+      diasMasConcurridos = diasAgregados
+        .map((dia) => {
+          let numeroCorregido;
+          // MongoDB: 1=Domingo, 2=Lunes, 3=Martes, ..., 7=Sábado
+          // Queremos: 1=Lunes, 2=Martes, ..., 5=Viernes
+          if (dia._id === 1) {
+            // Domingo -> 7
+            numeroCorregido = 7;
+          } else {
+            numeroCorregido = dia._id - 1; // Lunes=1, Martes=2, etc.
+          }
+
+          return {
+            _id: numeroCorregido,
+            totalCitas: dia.totalCitas,
+          };
+        })
+        .filter((dia) => dia._id >= 1 && dia._id <= 5) // Solo días laborables
+        .sort((a, b) => b.totalCitas - a.totalCitas); // Ordenar por más concurrido
+
+      console.log("Días más concurridos procesados:", diasMasConcurridos);
     } catch (error) {
       console.error("Error en días más concurridos:", error);
+      diasMasConcurridos = [];
     }
-    console.log("Días más concurridos:", diasMasConcurridos);
 
-    // 5. Ingresos totales
+    // 5. Ingresos totales - corregido
     let ingresosTotales = 0;
     try {
-      const resultadoIngresos = await Cita.aggregate([
-        { $match: dateFilter },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: { $toDouble: { $ifNull: ["$monto", 0] } } },
-          },
-        },
-      ]);
-      ingresosTotales =
-        resultadoIngresos.length > 0 ? resultadoIngresos[0].total : 0;
+      const citasConMontos = await Cita.find(dateFilter).select("monto");
+      console.log("Citas con montos encontradas:", citasConMontos.length);
+
+      ingresosTotales = citasConMontos.reduce((total, cita) => {
+        const monto = parseFloat(cita.monto) || 0;
+        return total + monto;
+      }, 0);
+
+      console.log("Ingresos calculados:", ingresosTotales);
     } catch (error) {
       console.error("Error calculando ingresos:", error);
+      ingresosTotales = 0;
     }
-    console.log("Ingresos totales:", ingresosTotales);
 
     // 6. Promedio de ingresos diarios
-    const diasEnPeriodo = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+    const diasEnPeriodo = Math.max(
+      1,
+      Math.ceil((end - start) / (1000 * 60 * 60 * 24))
+    );
     const promedioIngresoDiario = Math.round(ingresosTotales / diasEnPeriodo);
 
     // 7. Odontólogos activos en el período
@@ -148,18 +187,27 @@ export const getStatistics = async (req, res) => {
         "odontologo"
       );
       odontologosActivos = odontologosUnicos.length;
+      console.log(
+        "Odontólogos activos:",
+        odontologosActivos,
+        "IDs:",
+        odontologosUnicos
+      );
     } catch (error) {
       console.error("Error contando odontólogos:", error);
+      odontologosActivos = 0;
     }
 
     // 8. Insumos agotados (stock menor a 10)
     let insumosAgotados = 0;
     try {
       insumosAgotados = await Insumo.countDocuments({
-        cantidad: { $lt: 10 },
+        cantidadDisponible: { $lt: 10 },
       });
+      console.log("Insumos agotados:", insumosAgotados);
     } catch (error) {
       console.error("Error contando insumos agotados:", error);
+      insumosAgotados = 0;
     }
 
     // 9. Estadísticas adicionales
@@ -189,6 +237,7 @@ export const getStatistics = async (req, res) => {
         diasEnPeriodo,
         fechaInicio: start,
         fechaFin: end,
+        filtroAplicado: dateFilter,
       },
     };
 
@@ -208,7 +257,11 @@ export const getStatistics = async (req, res) => {
 export const getQuickStats = async (req, res) => {
   try {
     const today = new Date();
+    today.setHours(23, 59, 59, 999);
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    console.log("Estadísticas rápidas - Período:", { startOfMonth, today });
 
     // Estadísticas del mes actual
     const citasEsteMes = await Cita.countDocuments({
@@ -219,10 +272,14 @@ export const getQuickStats = async (req, res) => {
       fecha: { $gte: startOfMonth, $lte: today },
     }).distinct("paciente");
 
-    const ingresosEsteMes = await Cita.aggregate([
-      { $match: { fecha: { $gte: startOfMonth, $lte: today } } },
-      { $group: { _id: null, total: { $sum: { $toDouble: "$monto" } } } },
-    ]);
+    // Ingresos del mes usando reduce
+    const citasConMontos = await Cita.find({
+      fecha: { $gte: startOfMonth, $lte: today },
+    }).select("monto");
+
+    const ingresosEsteMes = citasConMontos.reduce((total, cita) => {
+      return total + (parseFloat(cita.monto) || 0);
+    }, 0);
 
     // Citas de hoy
     const startOfDay = new Date();
@@ -242,19 +299,21 @@ export const getQuickStats = async (req, res) => {
 
     // Insumos con stock bajo
     const insumosStockBajo = await Insumo.countDocuments({
-      cantidad: { $lt: 10 },
+      cantidadDisponible: { $lt: 10 },
     });
 
-    res.json({
+    const quickStats = {
       citasHoy,
       citasEsteMes,
       pacientesEsteMes: pacientesEsteMes.length,
-      ingresosEsteMes:
-        ingresosEsteMes.length > 0 ? Math.round(ingresosEsteMes[0].total) : 0,
+      ingresosEsteMes: Math.round(ingresosEsteMes),
       totalPacientes,
       totalOdontologos,
       insumosStockBajo,
-    });
+    };
+
+    console.log("Estadísticas rápidas calculadas:", quickStats);
+    res.json(quickStats);
   } catch (error) {
     console.error("Error al obtener estadísticas rápidas:", error);
     res.status(500).json({
