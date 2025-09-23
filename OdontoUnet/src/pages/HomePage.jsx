@@ -11,7 +11,6 @@ import {
   Clock,
   Stethoscope,
 } from "lucide-react";
-import { Link } from "react-scroll";
 
 function HomePage() {
   // Carrusel
@@ -42,7 +41,7 @@ function HomePage() {
       }
     };
 
-    // Cargar doctores
+    // Cargar doctores - USANDO EL ENDPOINT CORRECTO
     const fetchDoctores = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/doctors");
@@ -95,8 +94,27 @@ function HomePage() {
     const diasFormateados = diasTrabajo
       .map((dia) => diasCortos[dia] || dia)
       .join(", ");
-    const horario = `${horarioInicio || "8:00 AM"} - ${
-      horarioFin || "5:00 PM"
+
+    // Convertir formato de tiempo si es necesario
+    const formatTime = (time) => {
+      if (!time) return "";
+      if (time.includes(":") && time.length === 5) {
+        // Formato 24h (08:00) -> convertir a 12h
+        const [hours, minutes] = time.split(":");
+        const hour12 =
+          parseInt(hours) === 0
+            ? 12
+            : parseInt(hours) > 12
+            ? parseInt(hours) - 12
+            : parseInt(hours);
+        const ampm = parseInt(hours) >= 12 ? "PM" : "AM";
+        return `${hour12}:${minutes} ${ampm}`;
+      }
+      return time; // Ya está en formato correcto
+    };
+
+    const horario = `${formatTime(horarioInicio) || "8:00 AM"} - ${
+      formatTime(horarioFin) || "5:00 PM"
     }`;
 
     return `${diasFormateados}: ${horario}`;
@@ -295,12 +313,12 @@ function HomePage() {
                   whileInView={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.4, delay: i * 0.2 }}
                 >
-                  {/* Foto del doctor */}
+                  {/* Foto del doctor - ACCESO CORREGIDO */}
                   <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-pastel-mint-dark border-4 border-pastel-mint-dark">
-                    {doctor.foto ? (
+                    {doctor.profile?.foto ? (
                       <img
-                        src={`http://localhost:3000/uploads/profiles/${doctor.foto}`}
-                        alt={`Dr. ${doctor.user?.username}`}
+                        src={`http://localhost:3000/uploads/profiles/${doctor.profile.foto}`}
+                        alt={`Dr. ${doctor.username}`}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -310,27 +328,27 @@ function HomePage() {
                     )}
                   </div>
 
-                  {/* Información del doctor */}
+                  {/* Información del doctor - ACCESO CORREGIDO */}
                   <h3 className="text-xl font-bold mb-2 text-pastel-primary">
-                    {doctor.user?.username || "Nombre no disponible"}
+                    Dr. {doctor.username || "Nombre no disponible"}
                   </h3>
 
-                  {doctor.especialidad && (
+                  {doctor.profile?.especialidad && (
                     <div className="mb-4">
                       <span className="inline-flex items-center gap-1 bg-pastel-green px-3 py-1 rounded-full text-sm font-medium text-green-700">
                         <Award size={14} />
-                        {doctor.especialidad}
+                        {doctor.profile.especialidad}
                       </span>
                     </div>
                   )}
 
-                  {/* Biografía */}
-                  {doctor.biografia ? (
+                  {/* Biografía - ACCESO CORREGIDO */}
+                  {doctor.profile?.biografia ? (
                     <p className="text-pastel-secondary text-sm mb-4 italic">
                       "
-                      {doctor.biografia.length > 120
-                        ? doctor.biografia.substring(0, 120) + "..."
-                        : doctor.biografia}
+                      {doctor.profile.biografia.length > 120
+                        ? doctor.profile.biografia.substring(0, 120) + "..."
+                        : doctor.profile.biografia}
                       "
                     </p>
                   ) : (
@@ -339,24 +357,24 @@ function HomePage() {
                     </p>
                   )}
 
-                  {/* Información de contacto */}
+                  {/* Información de contacto - ACCESO CORREGIDO */}
                   <div className="space-y-2 text-sm mb-4">
-                    {doctor.user?.email && (
+                    {doctor.email && (
                       <div className="flex items-center justify-center gap-2 text-pastel-secondary">
                         <Mail size={14} />
-                        <span>{doctor.user.email}</span>
+                        <span>{doctor.email}</span>
                       </div>
                     )}
 
-                    {doctor.telefono && (
+                    {doctor.profile?.telefono && (
                       <div className="flex items-center justify-center gap-2 text-pastel-secondary">
                         <Phone size={14} />
-                        <span>{doctor.telefono}</span>
+                        <span>{doctor.profile.telefono}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Horarios de atención */}
+                  {/* Horarios de atención - ACCESO CORREGIDO */}
                   <div className="pt-4 border-t border-pastel-mint-dark">
                     <div className="flex items-center justify-center gap-2 text-pastel-secondary text-sm mb-2">
                       <Clock size={14} />
@@ -364,9 +382,9 @@ function HomePage() {
                     </div>
                     <div className="text-xs text-pastel-muted bg-pastel-mint p-2 rounded">
                       {formatSchedule(
-                        doctor.diasTrabajo,
-                        doctor.horarioInicio,
-                        doctor.horarioFin
+                        doctor.profile?.diasTrabajo,
+                        doctor.profile?.horarioInicio,
+                        doctor.profile?.horarioFin
                       )}
                     </div>
                   </div>

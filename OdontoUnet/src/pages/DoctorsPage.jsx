@@ -8,6 +8,7 @@ import {
   MapPin,
   Mail,
   Stethoscope,
+  Clock,
 } from "lucide-react";
 
 function DoctorsPage() {
@@ -34,6 +35,28 @@ function DoctorsPage() {
     }
   };
 
+  // Calcular estadísticas reales
+  const stats = {
+    totalDoctors: doctors.length,
+    totalPatients: doctors.reduce(
+      (total, doc) => total + (doc.totalPacientes || 0),
+      0
+    ),
+    totalAppointments: doctors.reduce(
+      (total, doc) => total + (doc.totalCitas || 0),
+      0
+    ),
+    activeDoctors: doctors.filter((doc) => (doc.totalCitas || 0) > 0).length,
+    // Calcular promedio de citas por doctor activo
+    avgAppointmentsPerDoctor:
+      doctors.filter((doc) => (doc.totalCitas || 0) > 0).length > 0
+        ? Math.round(
+            doctors.reduce((total, doc) => total + (doc.totalCitas || 0), 0) /
+              doctors.filter((doc) => (doc.totalCitas || 0) > 0).length
+          )
+        : 0,
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-pastel-mint p-6">
@@ -57,43 +80,70 @@ function DoctorsPage() {
           </p>
         </div>
 
-        {/* Estadísticas generales */}
+        {/* Estadísticas generales corregidas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="card-pastel p-6 text-center bg-pastel-green">
             <Stethoscope size={32} className="mx-auto text-green-600 mb-2" />
             <p className="text-2xl font-bold text-green-700">
-              {doctors.length}
+              {stats.totalDoctors}
             </p>
-            <p className="text-green-600 text-sm">Doctores Activos</p>
+            <p className="text-green-600 text-sm">Doctores Registrados</p>
           </div>
 
           <div className="card-pastel p-6 text-center bg-pastel-blue">
             <Users size={32} className="mx-auto text-blue-600 mb-2" />
             <p className="text-2xl font-bold text-blue-700">
-              {doctors.reduce(
-                (total, doc) => total + (doc.totalPacientes || 0),
-                0
-              )}
+              {stats.activeDoctors}
             </p>
-            <p className="text-blue-600 text-sm">
-              Total Pacientes atendidos los ultimos dias
-            </p>
+            <p className="text-blue-600 text-sm">Doctores Activos</p>
           </div>
 
           <div className="card-pastel p-6 text-center bg-pastel-purple">
             <Calendar size={32} className="mx-auto text-purple-600 mb-2" />
             <p className="text-2xl font-bold text-purple-700">
-              {doctors.reduce((total, doc) => total + (doc.totalCitas || 0), 0)}
+              {stats.totalAppointments}
             </p>
-            <p className="text-purple-600 text-sm">Citas Realizadas</p>
+            <p className="text-purple-600 text-sm">Total de Citas</p>
           </div>
 
           <div className="card-pastel p-6 text-center bg-pastel-yellow">
-            <Award size={32} className="mx-auto text-yellow-600 mb-2" />
+            <Clock size={32} className="mx-auto text-yellow-600 mb-2" />
             <p className="text-2xl font-bold text-yellow-700">
-              {doctors.filter((doc) => (doc.totalCitas || 0) > 0).length}
+              {stats.avgAppointmentsPerDoctor}
             </p>
-            <p className="text-yellow-600 text-sm">Doctores Activos</p>
+            <p className="text-yellow-600 text-sm">Promedio Citas/Doctor</p>
+          </div>
+        </div>
+
+        {/* Estadísticas adicionales */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="card-pastel p-4 text-center bg-pastel-mint-light">
+            <div className="text-lg font-bold text-pastel-primary">
+              {stats.totalPatients}
+            </div>
+            <div className="text-sm text-pastel-secondary">
+              Total Pacientes Atendidos
+            </div>
+          </div>
+
+          <div className="card-pastel p-4 text-center bg-pastel-mint-light">
+            <div className="text-lg font-bold text-pastel-primary">
+              {((stats.activeDoctors / stats.totalDoctors) * 100).toFixed(1)}%
+            </div>
+            <div className="text-sm text-pastel-secondary">
+              Tasa de Actividad
+            </div>
+          </div>
+
+          <div className="card-pastel p-4 text-center bg-pastel-mint-light">
+            <div className="text-lg font-bold text-pastel-primary">
+              {stats.totalPatients > 0
+                ? (stats.totalPatients / stats.activeDoctors).toFixed(1)
+                : 0}
+            </div>
+            <div className="text-sm text-pastel-secondary">
+              Pacientes por Doctor Activo
+            </div>
           </div>
         </div>
 
@@ -147,15 +197,29 @@ function DoctorsPage() {
                         )}
                       </div>
 
-                      {/* Estado de actividad */}
-                      <div
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          (doctor.totalCitas || 0) > 0
-                            ? "bg-pastel-green text-green-700"
-                            : "bg-pastel-yellow text-yellow-700"
-                        }`}
-                      >
-                        {(doctor.totalCitas || 0) > 0 ? "Activo" : "Inactivo"}
+                      {/* Estado de actividad mejorado */}
+                      <div className="text-right">
+                        <div
+                          className={`px-3 py-1 rounded-full text-xs font-semibold mb-1 ${
+                            (doctor.totalCitas || 0) > 0
+                              ? "bg-pastel-green text-green-700"
+                              : "bg-pastel-yellow text-yellow-700"
+                          }`}
+                        >
+                          {(doctor.totalCitas || 0) > 0
+                            ? "Activo"
+                            : "Sin Actividad"}
+                        </div>
+                        {/* Indicador de nivel de actividad */}
+                        {(doctor.totalCitas || 0) > 0 && (
+                          <div className="text-xs text-pastel-muted">
+                            {doctor.totalCitas >= 10
+                              ? "🔥 Alta"
+                              : doctor.totalCitas >= 5
+                              ? "📈 Media"
+                              : "📊 Baja"}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -200,7 +264,7 @@ function DoctorsPage() {
                       </div>
                     )}
 
-                    {/* Estadísticas */}
+                    {/* Estadísticas individuales mejoradas */}
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t border-pastel-mint-dark">
                       <div className="text-center">
                         <div className="text-lg font-bold text-pastel-primary">
@@ -221,7 +285,13 @@ function DoctorsPage() {
                       <div className="text-center">
                         <div className="text-lg font-bold text-pastel-primary">
                           {doctor.ultimaCita
-                            ? new Date(doctor.ultimaCita).toLocaleDateString()
+                            ? new Date(doctor.ultimaCita).toLocaleDateString(
+                                "es-ES",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                }
+                              )
                             : "N/A"}
                         </div>
                         <div className="text-xs text-pastel-muted">
@@ -235,18 +305,20 @@ function DoctorsPage() {
                 {/* Información adicional expandible */}
                 {doctor.profile && (
                   <div className="mt-4 pt-4 border-t border-pastel-mint-dark text-xs text-pastel-muted">
-                    <p>
-                      <strong>Miembro desde:</strong>{" "}
-                      {new Date(doctor.createdAt).toLocaleDateString()}
-                    </p>
-                    {doctor.profile.fechaNacimiento && (
+                    <div className="grid grid-cols-2 gap-4">
                       <p>
-                        <strong>Fecha de nacimiento:</strong>{" "}
-                        {new Date(
-                          doctor.profile.fechaNacimiento
-                        ).toLocaleDateString()}
+                        <strong>Miembro desde:</strong>{" "}
+                        {new Date(doctor.createdAt).toLocaleDateString("es-ES")}
                       </p>
-                    )}
+                      {doctor.profile.fechaNacimiento && (
+                        <p>
+                          <strong>Fecha de nacimiento:</strong>{" "}
+                          {new Date(
+                            doctor.profile.fechaNacimiento
+                          ).toLocaleDateString("es-ES")}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -254,33 +326,46 @@ function DoctorsPage() {
           </div>
         )}
 
-        {/* Información adicional */}
+        {/* Información adicional actualizada */}
         <div className="mt-8 card-pastel p-6 bg-pastel-blue">
           <h3 className="text-lg font-semibold text-pastel-primary mb-3">
             💡 Información del Panel
           </h3>
-          <ul className="space-y-2 text-sm text-pastel-secondary">
-            <li>
-              • <strong>Doctores Activos:</strong> Odontólogos que han
-              registrado al menos una cita
-            </li>
-            <li>
-              • <strong>Total Pacientes:</strong> Suma de todos los pacientes
-              únicos atendidos
-            </li>
-            <li>
-              • <strong>Citas Realizadas:</strong> Total de consultas
-              registradas en el sistema
-            </li>
-            <li>
-              • <strong>Estado de Actividad:</strong> Se basa en la actividad
-              reciente de citas
-            </li>
-            <li>
-              • Los datos se actualizan en tiempo real según la actividad del
-              sistema
-            </li>
-          </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ul className="space-y-2 text-sm text-pastel-secondary">
+              <li>
+                • <strong>Doctores Registrados:</strong> Total de odontólogos en
+                el sistema
+              </li>
+              <li>
+                • <strong>Doctores Activos:</strong> Odontólogos con al menos
+                una cita registrada
+              </li>
+              <li>
+                • <strong>Total de Citas:</strong> Suma de todas las consultas
+                realizadas
+              </li>
+              <li>
+                • <strong>Promedio Citas/Doctor:</strong> Citas promedio por
+                doctor activo
+              </li>
+            </ul>
+            <ul className="space-y-2 text-sm text-pastel-secondary">
+              <li>
+                • <strong>Tasa de Actividad:</strong> Porcentaje de doctores
+                activos
+              </li>
+              <li>
+                • <strong>Actividad Alta:</strong> 10+ citas realizadas 🔥
+              </li>
+              <li>
+                • <strong>Actividad Media:</strong> 5-9 citas realizadas 📈
+              </li>
+              <li>
+                • <strong>Actividad Baja:</strong> 1-4 citas realizadas 📊
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

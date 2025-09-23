@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import Profile from "../models/profile.model.js";
+import Profile from "../models/profile.model.js"; // Asegúrate de importar el modelo de perfil
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
@@ -15,18 +15,11 @@ export const register = async (req, res) => {
     password,
     username,
     doctorKey,
-    // Campos del perfil
-    telefono,
-    direccion,
-    fechaNacimiento,
-    especialidad,
-    numeroLicencia,
-    biografia,
-    diasTrabajo,
+    // Los campos de perfil son opcionales en el registro
+    // ya que se llenarán en la página de perfil
   } = req.body;
 
   try {
-    // Verificar clave especial para doctores
     if (
       doctorKey !== process.env.DOCTOR_REGISTRATION_KEY &&
       doctorKey !== DOCTOR_REGISTRATION_KEY
@@ -45,45 +38,35 @@ export const register = async (req, res) => {
       role: "odontologo",
     });
 
-    const userSaved = await newUser.save();
+    const savedUser = await newUser.save();
 
-    // Crear perfil automáticamente con los datos del registro
-    const profileData = {
-      user: userSaved._id,
-      telefono: telefono || "",
-      direccion: direccion || "",
-      fechaNacimiento: fechaNacimiento || null,
-      especialidad: especialidad || "",
-      numeroLicencia: numeroLicencia || "",
-      biografia: biografia || "",
-      diasTrabajo: diasTrabajo || [
-        "Lunes",
-        "Martes",
-        "Miércoles",
-        "Jueves",
-        "Viernes",
-      ], // Horario por defecto
-    };
-
-    const newProfile = new Profile(profileData);
+    // 🔑 **Cambio Clave:** Crear un perfil vacío justo después de crear el usuario.
+    const newProfile = new Profile({
+      user: savedUser._id,
+      // Los demás campos se inician vacíos/por defecto
+      telefono: "",
+      direccion: "",
+      fechaNacimiento: null,
+      especialidad: "",
+      numeroLicencia: "",
+      biografia: "",
+      foto: null,
+      diasTrabajo: [],
+      horarioInicio: "8:00 AM",
+      horarioFin: "5:00 PM",
+    });
     await newProfile.save();
+    // --------------------------------------------------------------------------
 
-    const token = await createAccessToken({ id: userSaved._id });
-    res.cookie("token", token);
     res.json({
-      id: userSaved.id,
-      username: userSaved.username,
-      email: userSaved.email,
-      role: userSaved.role,
-      createdAt: userSaved.createdAt,
-      updatedAt: userSaved.updatedAt,
-      message: "Usuario y perfil creados exitosamente",
+      id: savedUser._id,
+      username: savedUser.username,
+      email: savedUser.email,
+      role: savedUser.role,
+      createdAt: savedUser.createdAt,
     });
   } catch (error) {
     console.error("Error en registro:", error);
-    if (error.code === 11000) {
-      return res.status(400).json(["Este email ya está registrado"]);
-    }
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
@@ -93,26 +76,25 @@ export const login = async (req, res) => {
 
   try {
     const userFound = await User.findOne({ email });
-    if (!userFound)
-      return res
-        .status(400)
-        .json({ message: "Email o contraseña incorrectos" });
+    if (!userFound) return res.status(400).json(["Credenciales inválidas"]);
 
     const isMatch = await bcrypt.compare(password, userFound.password);
-    if (!isMatch)
-      return res
-        .status(400)
-        .json({ message: "Email o contraseña incorrectos" });
+    if (!isMatch) return res.status(400).json(["Credenciales inválidas"]);
 
     const token = await createAccessToken({ id: userFound._id });
-    res.cookie("token", token);
+
+    res.cookie("token", token, {
+      httpOnly: process.env.NODE_ENV !== "development",
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "none",
+    });
+
     res.json({
-      id: userFound.id,
+      id: userFound._id,
       username: userFound.username,
       email: userFound.email,
       role: userFound.role,
       createdAt: userFound.createdAt,
-      updatedAt: userFound.updatedAt,
     });
   } catch (error) {
     console.error("Error en login:", error);
@@ -121,9 +103,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.cookie("token", "", {
-    expires: new Date(0),
-  });
+  res.cookie("token", "", { expires: new Date(0) });
   return res.sendStatus(200);
 };
 
@@ -131,27 +111,25 @@ export const profile = async (req, res) => {
   const userFound = await User.findById(req.user.id);
   if (!userFound)
     return res.status(400).json({ message: "Usuario no encontrado" });
+
   return res.json({
-    id: userFound.id,
+    id: userFound._id,
     username: userFound.username,
     email: userFound.email,
-    role: userFound.role,
     createdAt: userFound.createdAt,
-    updatedAt: userFound.updatedAt,
+    role: userFound.role,
   });
 };
 
 export const verifyToken = async (req, res) => {
   const { token } = req.cookies;
-  if (!token) return res.status(401).json({ message: "No autorizado" });
-  jwt.verify(token, TOKEN_SECRET, async (err, user) => {
-    if (err) return res.status(401).json({ message: "Token inválido" });
+  if (!token) return res.send(false);
+
+  jwt.verify(token, TOKEN_SECRET, async (error, user) => {
+    if (error) return res.sendStatus(401);
 
     const userFound = await User.findById(user.id);
-    if (!userFound)
-      return res.status(401).json({
-        message: "Usuario no encontrado",
-      });
+    if (!userFound) return res.sendStatus(401);
 
     return res.json({
       id: userFound._id,
@@ -163,55 +141,45 @@ export const verifyToken = async (req, res) => {
 };
 
 export const createAdmin = async (req, res) => {
-  const { email, password, username, key } = req.body;
+  const { username, email, password, key } = req.body;
 
-  try {
-    if (key !== process.env.ADMIN_CREATION_KEY && key !== ADMIN_CREATION_KEY) {
-      return res
-        .status(403)
-        .json({ message: "Clave de administrador inválida" });
-    }
-
-    const userFound = await User.findOne({ email });
-    if (userFound)
-      return res.status(400).json({ message: "Este email ya existe" });
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const newAdmin = new User({
-      username,
-      email,
-      password: passwordHash,
-      role: "admin",
-    });
-
-    const savedAdmin = await newAdmin.save();
-
-    // Los admins no necesitan perfil detallado, pero creamos uno básico por consistencia
-    const adminProfile = new Profile({
-      user: savedAdmin._id,
-      telefono: "",
-      direccion: "",
-      fechaNacimiento: null,
-      especialidad: "Administrador del Sistema",
-      numeroLicencia: "",
-      biografia: "Administrador del sistema odontológico UNET",
-      diasTrabajo: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
-    });
-    await adminProfile.save();
-
-    res.json({
-      id: savedAdmin._id,
-      username: savedAdmin.username,
-      email: savedAdmin.email,
-      role: savedAdmin.role,
-      createdAt: savedAdmin.createdAt,
-    });
-  } catch (error) {
-    console.error("Error creando admin:", error);
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "Este email ya está registrado" });
-    }
-    res.status(500).json({ message: "Error interno del servidor" });
+  if (key !== process.env.ADMIN_CREATION_KEY && key !== ADMIN_CREATION_KEY) {
+    return res.status(403).json({ message: "Clave de administrador inválida" });
   }
+
+  const userFound = await User.findOne({ email });
+  if (userFound)
+    return res.status(400).json({ message: "Este email ya existe" });
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const newAdmin = new User({
+    username,
+    email,
+    password: passwordHash,
+    role: "admin",
+  });
+
+  const savedAdmin = await newAdmin.save();
+
+  // Los admins no necesitan perfil detallado, pero creamos uno básico por consistencia
+  const adminProfile = new Profile({
+    user: savedAdmin._id,
+    telefono: "",
+    direccion: "",
+    fechaNacimiento: null,
+    especialidad: "Administrador del Sistema",
+    numeroLicencia: "",
+    biografia: "Administrador del sistema odontológico UNET",
+    diasTrabajo: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
+  });
+  await adminProfile.save();
+
+  res.json({
+    id: savedAdmin._id,
+    username: savedAdmin.username,
+    email: savedAdmin.email,
+    role: savedAdmin.role,
+    createdAt: savedAdmin.createdAt,
+  });
 };
