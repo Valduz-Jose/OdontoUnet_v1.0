@@ -1,8 +1,11 @@
-import axios from 'axios'
+import axios from "axios";
+
+// Usar variable de entorno o fallback para desarrollo
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const instance = axios.create({
-    baseURL: 'http://localhost:3000/api',
-    withCredentials:true
-})
+  baseURL: `${API_URL}/api`,
+  withCredentials: true,
+});
 
-export default instance
+export default instance;

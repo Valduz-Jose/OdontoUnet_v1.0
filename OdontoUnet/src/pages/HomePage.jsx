@@ -11,6 +11,7 @@ import {
   Clock,
   Stethoscope,
 } from "lucide-react";
+import { API_ENDPOINTS, getImageUrl } from "../api/config";
 
 function HomePage() {
   // Carrusel
@@ -25,9 +26,7 @@ function HomePage() {
     // Cargar imágenes del carrusel
     const fetchCarouselImages = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/carousel/public"
-        );
+        const response = await fetch(API_ENDPOINTS.carouselPublic);
         const data = await response.json();
         setCarouselImages(data);
       } catch (error) {
@@ -44,7 +43,7 @@ function HomePage() {
     // Cargar doctores - USANDO EL ENDPOINT CORRECTO
     const fetchDoctores = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/doctors");
+        const response = await fetch(API_ENDPOINTS.doctors);
         const data = await response.json();
         console.log("Doctores cargados:", data);
         setDoctores(data);
@@ -128,11 +127,10 @@ function HomePage() {
           <>
             <motion.img
               key={currentIndex}
-              src={
-                carouselImages[currentIndex].filename.startsWith("default")
-                  ? `/images/${carouselImages[currentIndex].filename}`
-                  : `http://localhost:3000/uploads/carousel/${carouselImages[currentIndex].filename}`
-              }
+              src={getImageUrl(
+                "carousel",
+                carouselImages[currentIndex].filename
+              )}
               alt={carouselImages[currentIndex].originalName}
               className="w-full h-full object-cover"
               initial={{ opacity: 0 }}
@@ -317,7 +315,7 @@ function HomePage() {
                   <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-pastel-mint-dark border-4 border-pastel-mint-dark">
                     {doctor.profile?.foto ? (
                       <img
-                        src={`http://localhost:3000/uploads/profiles/${doctor.profile.foto}`}
+                        src={getImageUrl("profiles", doctor.profile.foto)}
                         alt={`Dr. ${doctor.username}`}
                         className="w-full h-full object-cover"
                       />

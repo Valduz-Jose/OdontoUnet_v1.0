@@ -10,6 +10,7 @@ import {
   Stethoscope,
   Clock,
 } from "lucide-react";
+import { API_ENDPOINTS, getImageUrl } from "../api/config";
 
 function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
@@ -21,9 +22,7 @@ function DoctorsPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/doctors-stats", {
-        credentials: "include",
-      });
+      const response = await fetch(API_ENDPOINTS.doctorsStats);
       if (response.ok) {
         const data = await response.json();
         setDoctors(data);
@@ -171,7 +170,7 @@ function DoctorsPage() {
                     <div className="w-20 h-20 rounded-full overflow-hidden bg-pastel-blue-dark border-2 border-pastel-mint-dark">
                       {doctor.profile?.foto ? (
                         <img
-                          src={`http://localhost:3000/uploads/profiles/${doctor.profile.foto}`}
+                          src={getImageUrl("profiles", doctor.profile.foto)}
                           alt={`Dr. ${doctor.username}`}
                           className="w-full h-full object-cover"
                         />
