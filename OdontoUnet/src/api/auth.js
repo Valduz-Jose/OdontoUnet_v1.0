@@ -1,6 +1,7 @@
 import axios from "./axios";
 
-const API = "http://localhost:3000/api";
+// Ya no necesitamos esta línea hardcodeada ya que axios.js maneja las URLs
+// const API = "http://localhost:3000/api"; // ❌ REMOVIDO
 
 export const registerRequest = (user) => {
   return axios.post("/register", {
@@ -17,6 +18,7 @@ export const registerRequest = (user) => {
     biografia: user.biografia,
   });
 };
-export const loginRequest = (user) => axios.post(`/login`, user);
-export const verifyTokenRequest = (user) => axios.get(`/verify`);
+
+export const loginRequest = (user) => axios.post("/login", user);
+export const verifyTokenRequest = () => axios.get("/verify");
 export const logoutRequest = () => axios.post("/logout");
