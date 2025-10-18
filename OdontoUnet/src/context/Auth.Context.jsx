@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth";
+import {
+  registerRequest,
+  loginRequest,
+  verifyTokenRequest,
+  logoutRequest,
+} from "../api/auth";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
@@ -17,14 +22,24 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false); // 🆕 Nuevo estado
 
+  // 🔄 FUNCIÓN SIGNUP MODIFICADA
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
       console.log("Respuesta del registro:", res.data);
-      setUser(res.data);
-      setIsAuthenticated(true);
+
+      // ❌ NO establecemos usuario ni autenticación
+      // setUser(res.data);
+      // setIsAuthenticated(true);
+
+      // ✅ Solo limpiamos errores y marcamos registro exitoso
       setErrors([]);
+      setRegistrationSuccess(true);
+
+      // Retornamos true para indicar éxito
+      return true;
     } catch (error) {
       console.log("Error en signup:", error);
       if (error.response && error.response.data) {
@@ -40,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setErrors(["Error de conexión"]);
       }
+      return false; // Retornamos false si hay error
     }
   };
 
@@ -64,11 +80,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    Cookies.remove("token");
-    setIsAuthenticated(false);
-    setUser(null);
-    setErrors([]);
+  const logout = async () => {
+    try {
+      // Llamar al backend para eliminar la cookie httpOnly
+      await logoutRequest();
+    } catch (error) {
+      console.log("Error al cerrar sesión:", error);
+    } finally {
+      // Limpiar estado local
+      Cookies.remove("token");
+      setIsAuthenticated(false);
+      setUser(null);
+      setErrors([]);
+    }
   };
 
   useEffect(() => {
@@ -82,29 +106,26 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     async function checkLogin() {
-      const cookies = Cookies.get();
-      if (!cookies.token) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return setUser(null);
-      }
-
       try {
-        const res = await verifyTokenRequest(cookies.token);
+        // No verificamos si existe la cookie desde JS porque puede ser httpOnly
+        // Llamamos directo al backend que verifica desde req.cookies
+        const res = await verifyTokenRequest();
+
         if (!res.data) {
           setIsAuthenticated(false);
           setLoading(false);
+          setUser(null);
           return;
         }
+
         setIsAuthenticated(true);
         setUser(res.data);
         setLoading(false);
       } catch (error) {
-        console.log("Error verificando token:", error);
+        console.log("No hay sesión activa o token inválido");
         setIsAuthenticated(false);
         setUser(null);
         setLoading(false);
-        Cookies.remove("token");
       }
     }
     checkLogin();
@@ -120,6 +141,8 @@ export const AuthProvider = ({ children }) => {
         user,
         isAuthenticated,
         errors,
+        registrationSuccess, // 🆕 Exportar el nuevo estado
+        setRegistrationSuccess, // 🆕 Exportar setter para limpiar después
       }}
     >
       {children}

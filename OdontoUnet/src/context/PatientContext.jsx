@@ -89,4 +89,3 @@ export function PatientProvider({children}) {
         </PatientContext.Provider>
     )
 }
-

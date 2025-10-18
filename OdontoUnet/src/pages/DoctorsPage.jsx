@@ -10,7 +10,8 @@ import {
   Stethoscope,
   Clock,
 } from "lucide-react";
-import { API_ENDPOINTS, getImageUrl } from "../api/config";
+import { getImageUrl } from "../api/config";
+import { getDoctorsStatsRequest } from "../api/doctor";
 
 function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
@@ -22,11 +23,8 @@ function DoctorsPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.doctorsStats);
-      if (response.ok) {
-        const data = await response.json();
-        setDoctors(data);
-      }
+      const response = await getDoctorsStatsRequest();
+      setDoctors(response.data);
     } catch (error) {
       console.error("Error al obtener doctores:", error);
     } finally {

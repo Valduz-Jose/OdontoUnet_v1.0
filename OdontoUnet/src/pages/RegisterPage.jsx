@@ -29,7 +29,13 @@ function RegisterPage() {
     setValue,
     watch,
   } = useForm();
-  const { signup, isAuthenticated, errors: registerErrors, user } = useAuth();
+  const {
+    signup,
+    isAuthenticated,
+    errors: registerErrors,
+    user,
+    registrationSuccess,
+  } = useAuth();
   const navigate = useNavigate();
   const [showProfileFields, setShowProfileFields] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
@@ -44,6 +50,7 @@ function RegisterPage() {
     "Domingo",
   ];
 
+  // ✅ Solo redirigir si YA está autenticado (viene de otro lado)
   useEffect(() => {
     if (isAuthenticated) {
       if (user.role === "admin") {
@@ -54,6 +61,19 @@ function RegisterPage() {
     }
   }, [isAuthenticated]);
 
+  // 🆕 Efecto para redirigir al login después del registro exitoso
+  useEffect(() => {
+    if (registrationSuccess) {
+      // Redirigir al login con un mensaje de éxito
+      navigate("/login", {
+        state: {
+          message:
+            "¡Registro exitoso! Ahora inicia sesión con tus credenciales",
+        },
+      });
+    }
+  }, [registrationSuccess, navigate]);
+
   const handleDayChange = (day) => {
     const updatedDays = selectedDays.includes(day)
       ? selectedDays.filter((d) => d !== day)
@@ -63,13 +83,17 @@ function RegisterPage() {
     setValue("diasTrabajo", updatedDays);
   };
 
+  // 🔄 Modificar onsubmit para esperar resultado
   const onsubmit = handleSubmit(async (values) => {
     // Incluir los días de trabajo seleccionados
     const formData = {
       ...values,
       diasTrabajo: selectedDays,
     };
-    signup(formData);
+
+    // Llamar a signup y esperar el resultado
+    await signup(formData);
+    // El useEffect se encargará de la redirección si es exitoso
   });
 
   return (

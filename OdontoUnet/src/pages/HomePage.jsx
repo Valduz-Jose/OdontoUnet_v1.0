@@ -12,6 +12,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { API_ENDPOINTS, getImageUrl } from "../api/config";
+import { getDoctorsRequest } from "../api/doctor";
 
 function HomePage() {
   // Carrusel
@@ -43,10 +44,8 @@ function HomePage() {
     // Cargar doctores - USANDO EL ENDPOINT CORRECTO
     const fetchDoctores = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.doctors);
-        const data = await response.json();
-        console.log("Doctores cargados:", data);
-        setDoctores(data);
+        const response = await getDoctorsRequest();
+        setDoctores(response.data);
       } catch (error) {
         console.error("Error cargando doctores:", error);
       } finally {

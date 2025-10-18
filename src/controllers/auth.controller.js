@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import Profile from "../models/profile.model.js"; // Asegúrate de importar el modelo de perfil
+import Profile from "../models/profile.model.js";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
@@ -15,8 +15,16 @@ export const register = async (req, res) => {
     password,
     username,
     doctorKey,
-    // Los campos de perfil son opcionales en el registro
-    // ya que se llenarán en la página de perfil
+    // 🆕 Campos opcionales del perfil
+    telefono,
+    direccion,
+    fechaNacimiento,
+    especialidad,
+    numeroLicencia,
+    biografia,
+    diasTrabajo,
+    horarioInicio,
+    horarioFin,
   } = req.body;
 
   try {
@@ -40,23 +48,33 @@ export const register = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // 🔑 **Cambio Clave:** Crear un perfil vacío justo después de crear el usuario.
+    // 🔄 Crear perfil con los datos proporcionados o valores por defecto
     const newProfile = new Profile({
       user: savedUser._id,
-      // Los demás campos se inician vacíos/por defecto
-      telefono: "",
-      direccion: "",
-      fechaNacimiento: null,
-      especialidad: "",
-      numeroLicencia: "",
-      biografia: "",
+      telefono: telefono || "",
+      direccion: direccion || "",
+      fechaNacimiento: fechaNacimiento || null,
+      especialidad: especialidad || "",
+      numeroLicencia: numeroLicencia || "",
+      biografia: biografia || "",
       foto: null,
-      diasTrabajo: [],
-      horarioInicio: "8:00 AM",
-      horarioFin: "5:00 PM",
+      diasTrabajo: Array.isArray(diasTrabajo) ? diasTrabajo : [],
+      horarioInicio: horarioInicio || "8:00 AM",
+      horarioFin: horarioFin || "5:00 PM",
     });
+
     await newProfile.save();
-    // --------------------------------------------------------------------------
+
+    console.log("✅ Perfil creado con datos:", {
+      user: savedUser._id,
+      telefono,
+      direccion,
+      fechaNacimiento,
+      especialidad,
+      numeroLicencia,
+      biografia: biografia ? "sí" : "no",
+      diasTrabajo: diasTrabajo?.length || 0,
+    });
 
     res.json({
       id: savedUser._id,
@@ -84,9 +102,9 @@ export const login = async (req, res) => {
     const token = await createAccessToken({ id: userFound._id });
 
     res.cookie("token", token, {
-      httpOnly: process.env.NODE_ENV !== "development",
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "none",
+      httpOnly: true, // Siempre httpOnly
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     res.json({

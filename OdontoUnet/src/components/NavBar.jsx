@@ -3,6 +3,24 @@ import { useAuth } from "../context/Auth.Context";
 import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun, Users } from "lucide-react";
 
+const AppLogo = () => (
+  <Link to="/" className="flex items-center space-x-2 rtl:space-x-reverse">
+    {/* Asegúrate de que tu logo esté en la carpeta /public/logo.jpg */}
+    <img
+      src="/logounet1.png"
+      alt="Logo OdontoUNET"
+      className="h-8 w-auto" // Ajusta la altura aquí (h-8 = 32px)
+    />
+    <Link
+      to="/"
+      className="text-2xl font-bold tracking-wide text-pastel-primary hover:text-blue-600 transition-colors"
+      title="Ir al inicio"
+    >
+      Sistema Odontológico
+    </Link>
+  </Link>
+);
+
 function NavBar() {
   const { isAuthenticated, logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,13 +59,8 @@ function NavBar() {
     <nav className="card-pastel border-b-2 border-pastel-mint-dark shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo / Título - SIEMPRE va a home */}
-        <Link
-          to="/"
-          className="text-2xl font-bold tracking-wide text-pastel-primary hover:text-blue-600 transition-colors"
-          title="Ir al inicio"
-        >
-          Sistema Odontológico
-        </Link>
+
+        <AppLogo />
 
         {/* Botón menú móvil */}
         <button
