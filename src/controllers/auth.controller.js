@@ -15,7 +15,7 @@ export const register = async (req, res) => {
     password,
     username,
     doctorKey,
-    // 🆕 Campos opcionales del perfil
+    // Campos opcionales del perfil
     telefono,
     direccion,
     fechaNacimiento,
@@ -48,7 +48,7 @@ export const register = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // 🔄 Crear perfil con los datos proporcionados o valores por defecto
+    //Crear perfil con los datos proporcionados o valores por defecto
     const newProfile = new Profile({
       user: savedUser._id,
       telefono: telefono || "",

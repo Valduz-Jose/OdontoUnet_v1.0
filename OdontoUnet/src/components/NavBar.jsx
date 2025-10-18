@@ -5,7 +5,6 @@ import { Menu, X, Moon, Sun, Users } from "lucide-react";
 
 const AppLogo = () => (
   <Link to="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-    {/* Asegúrate de que tu logo esté en la carpeta /public/logo.jpg */}
     <img
       src="/logounet1.png"
       alt="Logo OdontoUNET"

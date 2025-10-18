@@ -22,19 +22,19 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false); // 🆕 Nuevo estado
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  // 🔄 FUNCIÓN SIGNUP MODIFICADA
+  //  FUNCIÓN SIGNUP MODIFICADA
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
       console.log("Respuesta del registro:", res.data);
 
-      // ❌ NO establecemos usuario ni autenticación
+      //  NO establecemos usuario ni autenticación
       // setUser(res.data);
       // setIsAuthenticated(true);
 
-      // ✅ Solo limpiamos errores y marcamos registro exitoso
+      // Solo limpiamos errores y marcamos registro exitoso
       setErrors([]);
       setRegistrationSuccess(true);
 
@@ -141,8 +141,8 @@ export const AuthProvider = ({ children }) => {
         user,
         isAuthenticated,
         errors,
-        registrationSuccess, // 🆕 Exportar el nuevo estado
-        setRegistrationSuccess, // 🆕 Exportar setter para limpiar después
+        registrationSuccess, // Exportar el nuevo estado
+        setRegistrationSuccess, //  Exportar setter para limpiar después
       }}
     >
       {children}

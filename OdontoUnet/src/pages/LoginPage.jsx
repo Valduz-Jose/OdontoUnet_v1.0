@@ -21,7 +21,7 @@ function LoginPage() {
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState("");
 
-  // 🆕 Capturar mensaje de éxito del registro
+  //  Capturar mensaje de éxito del registro
   useEffect(() => {
     if (location.state?.message) {
       setSuccessMessage(location.state.message);
@@ -54,7 +54,7 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-pastel-mint flex items-center justify-center p-6">
       <div className="card-pastel max-w-md w-full p-8">
-        {/* 🆕 Mensaje de éxito del registro */}
+        {/*  Mensaje de éxito del registro */}
         {successMessage && (
           <div className="bg-green-50 border border-green-300 p-4 rounded-lg mb-4 flex items-center gap-3">
             <CheckCircle className="text-green-600 flex-shrink-0" size={20} />

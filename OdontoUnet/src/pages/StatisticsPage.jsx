@@ -122,7 +122,7 @@ function StatisticsPage() {
     setDateRange((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔧 FUNCIÓN CORREGIDA PARA LAS FECHAS
+  //  FUNCIÓN CORREGIDA PARA LAS FECHAS
   const handlePeriodChange = (period) => {
     const today = new Date();
     let startDate = new Date();

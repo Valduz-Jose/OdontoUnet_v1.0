@@ -1,7 +1,7 @@
 import axios from "./axios";
 
 // Ya no necesitamos esta línea hardcodeada ya que axios.js maneja las URLs
-// const API = "http://localhost:3000/api"; // ❌ REMOVIDO
+// const API = "http://localhost:3000/api"; //  REMOVIDO
 
 export const registerRequest = (user) => {
   return axios.post("/register", {

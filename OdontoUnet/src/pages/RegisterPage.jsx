@@ -50,7 +50,7 @@ function RegisterPage() {
     "Domingo",
   ];
 
-  // ✅ Solo redirigir si YA está autenticado (viene de otro lado)
+  //  Solo redirigir si YA está autenticado (viene de otro lado)
   useEffect(() => {
     if (isAuthenticated) {
       if (user.role === "admin") {
@@ -61,7 +61,7 @@ function RegisterPage() {
     }
   }, [isAuthenticated]);
 
-  // 🆕 Efecto para redirigir al login después del registro exitoso
+  //  Efecto para redirigir al login después del registro exitoso
   useEffect(() => {
     if (registrationSuccess) {
       // Redirigir al login con un mensaje de éxito
@@ -83,7 +83,7 @@ function RegisterPage() {
     setValue("diasTrabajo", updatedDays);
   };
 
-  // 🔄 Modificar onsubmit para esperar resultado
+  //  Modificar onsubmit para esperar resultado
   const onsubmit = handleSubmit(async (values) => {
     // Incluir los días de trabajo seleccionados
     const formData = {
