@@ -38,7 +38,7 @@
 
 ## 🎯 Descripción
 
-**OdontoUNET** es una solución tecnológica moderna diseñada para transformar digitalmente la gestión administrativa y clínica de la Unidad Odontológica de la UNET. El sistema reemplaza los procesos manuales tradicionales (cuadernos físicos, registros dispersos) con una plataforma web centralizada que garantiza:
+**OdontoUNET** Es una solución tecnológica moderna diseñada para transformar digitalmente la gestión administrativa y clínica de la Unidad Odontológica de la UNET. El sistema reemplaza los procesos manuales tradicionales (cuadernos físicos, registros dispersos) con una plataforma web centralizada que garantiza:
 
 - ✅ **Trazabilidad completa** de historias clínicas y tratamientos
 - ✅ **Control automático** del inventario de insumos
