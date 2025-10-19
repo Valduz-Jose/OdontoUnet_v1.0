@@ -11,7 +11,7 @@
 
 **Sistema integral de gestión administrativa para la Unidad Odontológica de la Universidad Nacional Experimental del Táchira (UNET)**
 
-[🌐 Demo en Vivo](https://odontounet-frontend.vercel.app) · [📖 Documentación](#-documentación-de-api) · [🐛 Reportar Bug](https://github.com/Valduz-Jose/odontounet/issues) · [✨ Solicitar Feature](https://github.com/Valduz-Jose/odontounet/issues)
+[🌐 Demo en Vivo](https://odontounet-frontend.vercel.app) · [📖 Documentación](#-documentación-de-api) · [🐛 Reportar Bug](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues) · [✨ Solicitar Feature](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues)
 
 </div>
 
