@@ -11,7 +11,7 @@
 
 **Sistema integral de gestión administrativa para la Unidad Odontológica de la Universidad Nacional Experimental del Táchira (UNET)**
 
-[🌐 Demo en Vivo](https://odontounet-frontend.vercel.app) · [📖 Documentación](#-documentación-de-api) · [🐛 Reportar Bug](https://github.com/Valduz-Jose/odontounet/issues) · [✨ Solicitar Feature](https://github.com/Valduz-Jose/odontounet/issues)
+[🌐 Demo en Vivo](https://odontounet-frontend.vercel.app) · [📖 Documentación](https://github.com/Valduz-Jose/OdontoUnet_v1.0) · [🐛 Reportar Bug](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues) · [✨ Solicitar Feature](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues)
 
 </div>
 
@@ -48,6 +48,7 @@
 ### 🌟 Problema que Resuelve
 
 La Unidad Odontológica enfrentaba:
+
 - 📋 Pérdida de información clínica en registros físicos
 - ⏱️ Ineficiencia operativa (sin trazabilidad de tratamientos)
 - 📦 Control deficiente del inventario de insumos
@@ -56,6 +57,7 @@ La Unidad Odontológica enfrentaba:
 ### 🎯 Solución Implementada
 
 Un sistema web full-stack que digitaliza:
+
 - 👤 **Gestión de Pacientes**: Historia clínica electrónica completa
 - 🦷 **Odontodiagrama Digital**: Registro interactivo del estado de 32 dientes con snapshots históricos
 - 📅 **Gestión de Citas**: Registro inmediato con descuento automático de inventario
@@ -67,12 +69,14 @@ Un sistema web full-stack que digitaliza:
 ## ✨ Características Principales
 
 ### 🦷 Odontodiagrama Interactivo
+
 - **32 dientes** con 10 estados clínicos posibles
 - **Snapshots históricos** por cita (inmutabilidad de registros)
 - **Actualización en tiempo real** del estado del paciente
 - **Trazabilidad completa** de tratamientos realizados
 
 ### 📊 Dashboard Ejecutivo
+
 - Citas realizadas por período
 - Pacientes atendidos (estadísticas por género)
 - Ingresos totales y promedio por cita
@@ -81,6 +85,7 @@ Un sistema web full-stack que digitaliza:
 - Rendimiento por odontólogo
 
 ### 🔐 Seguridad Robusta
+
 - Autenticación con **JWT** (JSON Web Tokens)
 - Cookies **HTTP-only** (protección anti-XSS)
 - **RBAC** (Control de Acceso Basado en Roles: Admin vs Odontólogo)
@@ -88,12 +93,14 @@ Un sistema web full-stack que digitaliza:
 - **CORS** configurado para orígenes específicos
 
 ### 💊 Gestión Inteligente de Inventario
+
 - Descuento **automático** de insumos al cerrar cita
 - Alertas de **stock crítico** (< 10 unidades)
 - Trazabilidad financiera (precio × cantidad)
 - Registro de entradas/salidas
 
 ### 👨‍⚕️ Panel de Doctores
+
 - Estadísticas de rendimiento individual
 - Tasa de actividad y pacientes atendidos
 - Gestión de horarios y días laborables
@@ -185,30 +192,33 @@ Un sistema web full-stack que digitaliza:
 ## 🚀 Tech Stack
 
 ### Backend
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | 20.x | Runtime JavaScript |
-| ![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white) | 5.1.0 | Framework web |
-| ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white) | 8.18.0 | Base de datos NoSQL |
-| ![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white) | 9.0.2 | Autenticación |
-| ![Bcrypt](https://img.shields.io/badge/Bcrypt-338844?style=flat) | 3.0.2 | Hash de contraseñas |
-| ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat) | 4.1.1 | Validación de esquemas |
-| ![Multer](https://img.shields.io/badge/Multer-F46519?style=flat) | 2.0.2 | Upload de archivos |
-| ![DayJS](https://img.shields.io/badge/DayJS-FF5F52?style=flat) | 1.11.18 | Manejo de fechas |
+
+| Tecnología                                                                                        | Versión | Propósito              |
+| ------------------------------------------------------------------------------------------------- | ------- | ---------------------- |
+| ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | 20.x    | Runtime JavaScript     |
+| ![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)   | 5.1.0   | Framework web          |
+| ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white)   | 8.18.0  | Base de datos NoSQL    |
+| ![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white)     | 9.0.2   | Autenticación          |
+| ![Bcrypt](https://img.shields.io/badge/Bcrypt-338844?style=flat)                                  | 3.0.2   | Hash de contraseñas    |
+| ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat)                                        | 4.1.1   | Validación de esquemas |
+| ![Multer](https://img.shields.io/badge/Multer-F46519?style=flat)                                  | 2.0.2   | Upload de archivos     |
+| ![DayJS](https://img.shields.io/badge/DayJS-FF5F52?style=flat)                                    | 1.11.18 | Manejo de fechas       |
 
 ### Frontend
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black) | 19.1.0 | Librería UI |
-| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | 6.3.5 | Build tool |
-| ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | 4.1.12 | Framework CSS |
-| ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white) | 1.11.0 | Cliente HTTP |
-| ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=react-router&logoColor=white) | 7.8.2 | Navegación |
-| ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=flat&logo=reacthookform&logoColor=white) | 7.62.0 | Gestión de formularios |
-| ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat&logo=framer&logoColor=white) | 12.23.12 | Animaciones |
-| ![Lucide React](https://img.shields.io/badge/Lucide-F56565?style=flat) | 0.542.0 | Iconos |
+
+| Tecnología                                                                                                            | Versión  | Propósito              |
+| --------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------- |
+| ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)                             | 19.1.0   | Librería UI            |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)                                | 6.3.5    | Build tool             |
+| ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat&logo=tailwind-css&logoColor=white)             | 4.1.12   | Framework CSS          |
+| ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)                             | 1.11.0   | Cliente HTTP           |
+| ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=react-router&logoColor=white)        | 7.8.2    | Navegación             |
+| ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=flat&logo=reacthookform&logoColor=white) | 7.62.0   | Gestión de formularios |
+| ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat&logo=framer&logoColor=white)            | 12.23.12 | Animaciones            |
+| ![Lucide React](https://img.shields.io/badge/Lucide-F56565?style=flat)                                                | 0.542.0  | Iconos                 |
 
 ### Herramientas de Desarrollo
+
 - **Nodemon**: Hot reload del servidor
 - **ESLint**: Linting de código
 - **Morgan**: Logging de requests HTTP
@@ -231,7 +241,7 @@ Antes de comenzar, asegúrate de tener instalado:
 ### Clonar el Repositorio
 
 ```bash
-git clone https://github.com/Valduz-Jose/odontounet.git
+git clone https://github.com/Valduz-Jose/OdontoUnet_v1.0.git
 cd odontounet
 ```
 
@@ -309,13 +319,15 @@ VITE_API_URL=http://localhost:3000/api
 
 1. Instala MongoDB Community Edition
 2. Inicia el servicio:
+
    ```bash
    # Windows
    net start MongoDB
-   
+
    # macOS/Linux
    sudo systemctl start mongod
    ```
+
 3. La URI por defecto es: `mongodb://localhost:27017/odontounet`
 
 #### Opción 2: MongoDB Atlas (Cloud)
@@ -371,12 +383,14 @@ NODE_ENV=production node src/index.js
 ### Scripts Disponibles
 
 #### Backend
+
 ```bash
 npm run dev       # Inicia servidor con nodemon (hot reload)
 npm start         # Inicia servidor en producción
 ```
 
 #### Frontend
+
 ```bash
 npm run dev       # Inicia servidor de desarrollo (Vite)
 npm run build     # Genera build de producción
@@ -462,25 +476,24 @@ odontounet/
 ### Mecanismos Implementados
 
 #### 1. Autenticación con JWT
+
 ```javascript
 // Generación de token con expiración de 1 día
-const token = jwt.sign(
-  { id: user._id }, 
-  TOKEN_SECRET, 
-  { expiresIn: "1d" }
-);
+const token = jwt.sign({ id: user._id }, TOKEN_SECRET, { expiresIn: "1d" });
 ```
 
 #### 2. Cookies HTTP-only
+
 ```javascript
 res.cookie("token", token, {
-  httpOnly: true,  // No accesible desde JavaScript
+  httpOnly: true, // No accesible desde JavaScript
   secure: process.env.NODE_ENV === "production",
-  sameSite: "none"  // Para CORS
+  sameSite: "none", // Para CORS
 });
 ```
 
 #### 3. Control de Acceso por Roles (RBAC)
+
 ```javascript
 // Middleware adminRequired
 export const adminRequired = async (req, res, next) => {
@@ -492,16 +505,18 @@ export const adminRequired = async (req, res, next) => {
 ```
 
 #### 4. Validación de Datos con Zod
+
 ```javascript
 // Ejemplo de schema
 const registerSchema = z.object({
   username: z.string().min(3),
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(6),
 });
 ```
 
 #### 5. Encriptación de Contraseñas
+
 ```javascript
 const passwordHash = await bcrypt.hash(password, 10);
 ```
@@ -521,21 +536,25 @@ const passwordHash = await bcrypt.hash(password, 10);
 ### Pruebas Realizadas
 
 #### ✅ Pruebas Unitarias
+
 - Validación de modelos de Mongoose
 - Verificación de schemas de Zod
 - Control de unicidad de datos (cédula, email)
 
 #### ✅ Pruebas de Integración
+
 - CRUD de pacientes, citas e insumos
 - Descuento automático de inventario
 - Generación de snapshots del odontodiagrama
 
 #### ✅ Pruebas de Seguridad
+
 - Autenticación con JWT
 - Control de acceso por roles (RBAC)
 - Protección de rutas privadas
 
 #### ✅ Pruebas Funcionales (Caja Negra)
+
 - Flujo completo de registro de paciente
 - Creación de cita con descuento de insumos
 - Generación de reportes estadísticos
@@ -555,6 +574,7 @@ npm test
 ## 📖 Documentación de API
 
 ### Base URL
+
 ```
 Desarrollo: http://localhost:3000/api
 Producción: https://tu-backend.herokuapp.com/api
@@ -565,9 +585,11 @@ Producción: https://tu-backend.herokuapp.com/api
 #### 🔐 Autenticación
 
 ##### POST `/api/register`
+
 Registra un nuevo odontólogo.
 
 **Body:**
+
 ```json
 {
   "username": "Dr. Juan Pérez",
@@ -578,6 +600,7 @@ Registra un nuevo odontólogo.
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "id": "60f7b3b3b3b3b3b3b3b3b3b3",
@@ -590,9 +613,11 @@ Registra un nuevo odontólogo.
 ---
 
 ##### POST `/api/login`
+
 Inicia sesión.
 
 **Body:**
+
 ```json
 {
   "email": "juan@unet.edu.ve",
@@ -601,6 +626,7 @@ Inicia sesión.
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "60f7b3b3b3b3b3b3b3b3b3b3",
@@ -609,19 +635,23 @@ Inicia sesión.
   "role": "odontologo"
 }
 ```
-*+ Cookie HTTP-only con token JWT*
+
+_+ Cookie HTTP-only con token JWT_
 
 ---
 
 ##### GET `/api/verify`
+
 Verifica si el token es válido.
 
 **Headers:**
+
 ```
 Cookie: token=<jwt_token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "60f7b3b3b3b3b3b3b3b3b3b3",
@@ -636,14 +666,17 @@ Cookie: token=<jwt_token>
 #### 👤 Pacientes
 
 ##### GET `/api/patients`
+
 Obtiene todos los pacientes.
 
 **Headers:**
+
 ```
 Cookie: token=<jwt_token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 [
   {
@@ -665,9 +698,11 @@ Cookie: token=<jwt_token>
 ---
 
 ##### POST `/api/patients`
+
 Crea un nuevo paciente.
 
 **Body:**
+
 ```json
 {
   "nombre": "María",
@@ -687,9 +722,11 @@ Crea un nuevo paciente.
 #### 📅 Citas
 
 ##### POST `/api/citas`
+
 Registra una nueva cita.
 
 **Body:**
+
 ```json
 {
   "pacienteId": "...",
@@ -698,12 +735,8 @@ Registra una nueva cita.
   "tratamientos": ["Restauración"],
   "monto": 50000,
   "numeroReferencia": "REF123456",
-  "odontograma": [
-    { "numero": 30, "estado": "Obturado" }
-  ],
-  "insumosUsados": [
-    { "insumo": "insumo_id", "cantidad": 5 }
-  ]
+  "odontograma": [{ "numero": 30, "estado": "Obturado" }],
+  "insumosUsados": [{ "insumo": "insumo_id", "cantidad": 5 }]
 }
 ```
 
@@ -712,12 +745,15 @@ Registra una nueva cita.
 #### 💊 Insumos
 
 ##### GET `/api/insumos`
+
 Obtiene todos los insumos.
 
 ##### POST `/api/insumos`
+
 Crea un nuevo insumo.
 
 ##### PUT `/api/insumos/:id`
+
 Actualiza un insumo.
 
 ---
@@ -725,9 +761,11 @@ Actualiza un insumo.
 #### 📊 Estadísticas
 
 ##### GET `/api/statistics?startDate=2025-01-01&endDate=2025-12-31`
+
 Obtiene estadísticas del período especificado.
 
 **Response:** `200 OK`
+
 ```json
 {
   "pacientesAtendidos": 15,
@@ -738,9 +776,7 @@ Obtiene estadísticas del período especificado.
     { "nombre": "Algodón", "totalUsado": 115 },
     { "nombre": "Gasa", "totalUsado": 32 }
   ],
-  "diasMasConcurridos": [
-    { "_id": 5, "totalCitas": 29 }
-  ],
+  "diasMasConcurridos": [{ "_id": 5, "totalCitas": 29 }],
   "odontologosActivos": 5
 }
 ```
@@ -749,22 +785,23 @@ Obtiene estadísticas del período especificado.
 
 ### Códigos de Estado HTTP
 
-| Código | Descripción |
-|--------|-------------|
-| 200 | OK - Solicitud exitosa |
-| 201 | Created - Recurso creado exitosamente |
-| 204 | No Content - Eliminación exitosa |
-| 400 | Bad Request - Datos inválidos |
-| 401 | Unauthorized - Token inválido o ausente |
-| 403 | Forbidden - Sin permisos suficientes |
-| 404 | Not Found - Recurso no encontrado |
-| 500 | Internal Server Error - Error del servidor |
+| Código | Descripción                                |
+| ------ | ------------------------------------------ |
+| 200    | OK - Solicitud exitosa                     |
+| 201    | Created - Recurso creado exitosamente      |
+| 204    | No Content - Eliminación exitosa           |
+| 400    | Bad Request - Datos inválidos              |
+| 401    | Unauthorized - Token inválido o ausente    |
+| 403    | Forbidden - Sin permisos suficientes       |
+| 404    | Not Found - Recurso no encontrado          |
+| 500    | Internal Server Error - Error del servidor |
 
 ---
 
 ## 🎨 Capturas de Pantalla
 
 ### Landing Page
+
 <img width="1905" height="922" alt="Captura de pantalla 2025-10-18 163738" src="https://github.com/user-attachments/assets/207e68da-32a4-444a-983c-955195e7de70" />
 <img width="1905" height="619" alt="Captura de pantalla (108)" src="https://github.com/user-attachments/assets/e39d7f50-b700-4eff-bf25-e58482c6ed62" />
 <img width="1895" height="824" alt="Captura de pantalla (109)" src="https://github.com/user-attachments/assets/65e819bf-e3c3-43fa-9575-56d73d1c5614" />
@@ -772,6 +809,7 @@ Obtiene estadísticas del período especificado.
 *Página principal con carrusel de imágenes de la universidad y servicios ofrecidos*
 
 ### Login y Registro
+
 <img width="1894" height="913" alt="Captura de pantalla (103)" src="https://github.com/user-attachments/assets/dd629050-c9bd-4a30-86d4-a9308e017128" />
 <img width="1882" height="913" alt="Captura de pantalla (104)" src="https://github.com/user-attachments/assets/1184b594-ac27-4923-8dc9-4bc30b2529f3" />
 <img width="1883" height="917" alt="Captura de pantalla (105)" src="https://github.com/user-attachments/assets/3f172082-bdd3-45a5-8d83-5376f22bdd54" />
@@ -779,25 +817,30 @@ Obtiene estadísticas del período especificado.
 *Sistema de autenticación seguro con validación de roles*
 
 ### Dashboard Estadísticas
+
 <img width="1897" height="915" alt="Captura de pantalla (117)" src="https://github.com/user-attachments/assets/bbcbe8a4-fddd-496f-88c7-2408bc5fd41e" />
 <img width="1892" height="818" alt="Captura de pantalla (118)" src="https://github.com/user-attachments/assets/9fa4ffba-5362-4fda-a1de-b1ad4dfe1d8b" />
 *Panel ejecutivo con métricas en tiempo real*
 
 ### Gestión de Pacientes
+
 <img width="1895" height="913" alt="Captura de pantalla (123)" src="https://github.com/user-attachments/assets/099a3452-6dba-4004-b0d1-ca68c353102c" />
 *Lista de pacientes con historia clínica completa*
 
 ### Odontodiagrama Interactivo
+
 <img width="1904" height="638" alt="Captura de pantalla 2025-10-19 130944" src="https://github.com/user-attachments/assets/01ad0d6d-28fe-4714-b9d2-c11b4ce9b58a" />
 *Registro interactivo del estado de 32 dientes con leyenda de colores*
 
 ### Registro de Cita
+
 <img width="1894" height="917" alt="Captura de pantalla (132)" src="https://github.com/user-attachments/assets/08b06fd9-f773-4d34-b217-9d9f765a8da8" />
 <img width="1898" height="789" alt="Captura de pantalla (133)" src="https://github.com/user-attachments/assets/d921bc76-7282-4131-b5ba-e2a6be662372" />
 <img width="1904" height="258" alt="Captura de pantalla 2025-10-19 131529" src="https://github.com/user-attachments/assets/ed8dac9f-ca13-427b-8f23-93c43f87a97a" />
 *Interfaz para registrar consultas con descuento automático de insumos*
 
 ### Control de Inventario
+
 <img width="1890" height="913" alt="Captura de pantalla (113)" src="https://github.com/user-attachments/assets/d3cebcc3-9550-4334-84b9-920bdc3b1e22" />
 <img width="1898" height="768" alt="Captura de pantalla (114)" src="https://github.com/user-attachments/assets/d7972cf0-3eda-4537-9db1-e4529086b48b" />
 <img width="1920" height="923" alt="Captura de pantalla (115)" src="https://github.com/user-attachments/assets/30ee0568-70a5-4dbb-a4bf-884e7205eff0" />
@@ -815,6 +858,7 @@ Obtiene estadísticas del período especificado.
 2. **Conecta tu repositorio de GitHub**
 
 3. **Configura el proyecto:**
+
    ```
    Root Directory: client/
    Build Command: npm run build
@@ -823,6 +867,7 @@ Obtiene estadísticas del período especificado.
    ```
 
 4. **Variables de entorno:**
+
    ```
    VITE_API_URL=https://tu-backend.herokuapp.com/api
    ```
@@ -838,6 +883,7 @@ Obtiene estadísticas del período especificado.
 2. **Conecta tu repositorio**
 
 3. **Configura variables de entorno:**
+
    ```
    MONGODB_URI=mongodb+srv://...
    TOKEN_SECRET=tu_clave_secreta
@@ -856,6 +902,7 @@ Obtiene estadísticas del período especificado.
 2. **New Web Service** → Conecta tu repo
 
 3. **Configuración:**
+
    ```
    Build Command: npm install
    Start Command: node src/index.js
@@ -898,28 +945,33 @@ heroku logs --tail
 ### Proceso de Contribución
 
 1. **Fork el proyecto**
+
    ```bash
    # Haz clic en el botón "Fork" en GitHub
    ```
 
 2. **Clona tu fork**
+
    ```bash
-   git clone https://github.com/tu-usuario/odontounet.git
+   git clone https://github.com/Valduz-jose/OdontoUnet_v1.0.git
    cd odontounet
    ```
 
 3. **Crea una rama para tu feature**
+
    ```bash
    git checkout -b feature/nueva-funcionalidad
    ```
 
 4. **Haz tus cambios y commitea**
+
    ```bash
    git add .
    git commit -m "feat: agrega nueva funcionalidad X"
    ```
 
 5. **Push a tu fork**
+
    ```bash
    git push origin feature/nueva-funcionalidad
    ```
@@ -945,7 +997,7 @@ chore: cambios en build, dependencias, etc
 
 ### Reportar Bugs
 
-Si encuentras un bug, por favor [crea un issue](https://github.com/Valduz-Jose/odontounet/issues) con:
+Si encuentras un bug, por favor [crea un issue](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues) con:
 
 - 🐛 Descripción clara del problema
 - 📋 Pasos para reproducirlo
@@ -954,7 +1006,7 @@ Si encuentras un bug, por favor [crea un issue](https://github.com/Valduz-Jose/o
 
 ### Solicitar Features
 
-Para solicitar nuevas funcionalidades, [abre un issue](https://github.com/Valduz-Jose/odontounet/issues) con:
+Para solicitar nuevas funcionalidades, [abre un issue](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues) con:
 
 - ✨ Descripción de la feature
 - 🎯 Problema que resuelve
@@ -965,6 +1017,7 @@ Para solicitar nuevas funcionalidades, [abre un issue](https://github.com/Valduz
 ## 🗺️ Roadmap
 
 ### ✅ Fase 1: MVP (Completado)
+
 - [x] Autenticación con JWT
 - [x] CRUD de pacientes
 - [x] Historia clínica electrónica
@@ -976,6 +1029,7 @@ Para solicitar nuevas funcionalidades, [abre un issue](https://github.com/Valduz
 - [x] Landing page con carrusel
 
 ### 🚧 Fase 2: Mejoras (En Progreso)
+
 - [ ] Módulo de agendamiento de citas (calendario)
 - [ ] Notificaciones por email/SMS
 - [ ] Exportar reportes a PDF
@@ -984,6 +1038,7 @@ Para solicitar nuevas funcionalidades, [abre un issue](https://github.com/Valduz
 - [ ] Documentación con Swagger/OpenAPI
 
 ### 🔮 Fase 3: Expansión (Futuro)
+
 - [ ] App móvil (React Native)
 - [ ] Integración con IA para diagnóstico asistido
 - [ ] Interoperabilidad con sistemas nacionales de salud
@@ -1037,7 +1092,7 @@ SOFTWARE.
 
 **Ingeniero en Informática - UNET**
 
-*Proyecto Especial de Grado - Octubre 2025*
+_Proyecto Especial de Grado - Octubre 2025_
 
 </div>
 
@@ -1057,8 +1112,8 @@ SOFTWARE.
 ¿Tienes preguntas o necesitas ayuda?
 
 - 📧 Email: [jose.valduz@unet.edu.ve](mailto:jose.valduz@unet.edu.ve)
-- 🐛 Issues: [GitHub Issues](https://github.com/Valduz-Jose/odontounet/issues)
-- 💬 Discusiones: [GitHub Discussions](https://github.com/Valduz-Jose/odontounet/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/Valduz-Jose/OdontoUnet_v1.0/issues)
+- 💬 Discusiones: [GitHub Discussions](https://github.com/Valduz-Jose/OdontoUnet_v1.0/discussions)
 
 ---
 
@@ -1067,16 +1122,19 @@ SOFTWARE.
 <div align="center">
 
 <!-- Estadísticas sociales -->
+
 ![Stars](https://img.shields.io/github/stars/Valduz-Jose/OdontoUnet_v1.0?style=social)
 ![Forks](https://img.shields.io/github/forks/Valduz-Jose/OdontoUnet_v1.0?style=social)
 ![Watchers](https://img.shields.io/github/watchers/Valduz-Jose/OdontoUnet_v1.0?style=social)
 
 <!-- Actividad -->
+
 ![Issues](https://img.shields.io/github/issues/Valduz-Jose/OdontoUnet_v1.0)
 ![Pull Requests](https://img.shields.io/github/issues-pr/Valduz-Jose/OdontoUnet_v1.0)
 ![Last Commit](https://img.shields.io/github/last-commit/Valduz-Jose/OdontoUnet_v1.0)
 
 <!-- Tamaño -->
+
 ![Code Size](https://img.shields.io/github/languages/code-size/Valduz-Jose/OdontoUnet_v1.0)
 ![Repo Size](https://img.shields.io/github/repo-size/Valduz-Jose/OdontoUnet_v1.0)
 
