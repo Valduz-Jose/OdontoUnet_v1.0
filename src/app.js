@@ -18,7 +18,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173", // Para desarrollo local
   "http://localhost:3000", // Por si usas otro puerto en desarrollo
-  "https://odontounet-frontend.vercel.app", // Tu frontend en producción
+  "https://odonto-unet-v1-0.vercel.app", // mi frontend en producción
 ];
 
 app.use(
