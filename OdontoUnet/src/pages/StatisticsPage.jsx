@@ -11,6 +11,7 @@ import {
   RefreshCw,
   AlertTriangle,
 } from "lucide-react";
+import { API_BASE_URL } from "../api/config";
 
 function StatisticsPage() {
   const [dateRange, setDateRange] = useState({
@@ -77,16 +78,13 @@ function StatisticsPage() {
 
       console.log("Enviando parámetros:", params.toString());
 
-      const response = await fetch(
-        `http://localhost:3000/api/statistics?${params}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/statistics?${params}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);

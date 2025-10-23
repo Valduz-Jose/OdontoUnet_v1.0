@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { getInsumos } from '../api/insumos';
+import { useState, useEffect } from "react";
+import { getInsumos } from "../api/insumos";
+import { API_BASE_URL } from "../api/config";
 
 function InsumosPage() {
   const [insumos, setInsumos] = useState([]);
@@ -7,15 +8,15 @@ function InsumosPage() {
   const [showForm, setShowForm] = useState(false);
   const [showRestockForm, setShowRestockForm] = useState(false);
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    cantidadDisponible: '',
-    unidadMedida: '',
-    precioUnitario: ''
+    nombre: "",
+    descripcion: "",
+    cantidadDisponible: "",
+    unidadMedida: "",
+    precioUnitario: "",
   });
   const [restockData, setRestockData] = useState({
-    insumoId: '',
-    cantidadAAgregar: ''
+    insumoId: "",
+    cantidadAAgregar: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -28,7 +29,7 @@ function InsumosPage() {
       const data = await getInsumos();
       setInsumos(data);
     } catch (error) {
-      console.error('Error al obtener insumos:', error);
+      console.error("Error al obtener insumos:", error);
     } finally {
       setLoading(false);
     }
@@ -36,17 +37,17 @@ function InsumosPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleRestockChange = (e) => {
     const { name, value } = e.target;
-    setRestockData(prev => ({
+    setRestockData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -56,41 +57,44 @@ function InsumosPage() {
 
     try {
       // Verificar si el insumo ya existe
-      const insumoExistente = insumos.find(i => 
-        i.nombre.toLowerCase().trim() === formData.nombre.toLowerCase().trim()
+      const insumoExistente = insumos.find(
+        (i) =>
+          i.nombre.toLowerCase().trim() === formData.nombre.toLowerCase().trim()
       );
 
       if (insumoExistente) {
-        alert(`El insumo "${formData.nombre}" ya existe. Usa la función "Reabastecer" para agregar más unidades.`);
+        alert(
+          `El insumo "${formData.nombre}" ya existe. Usa la función "Reabastecer" para agregar más unidades.`
+        );
         setSubmitting(false);
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/insumos', {
-        method: 'POST',
+      const response = await fetch(`${API_BASE_URL}/api/insumos`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           ...formData,
           cantidadDisponible: Number(formData.cantidadDisponible),
-          precioUnitario: Number(formData.precioUnitario) || 0
-        })
+          precioUnitario: Number(formData.precioUnitario) || 0,
+        }),
       });
 
       if (response.ok) {
         const nuevoInsumo = await response.json();
-        setInsumos(prev => [...prev, nuevoInsumo]);
+        setInsumos((prev) => [...prev, nuevoInsumo]);
         resetForm();
-        alert('Insumo creado exitosamente');
+        alert("Insumo creado exitosamente");
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.message || 'No se pudo crear el insumo'));
+        alert("Error: " + (error.message || "No se pudo crear el insumo"));
       }
     } catch (error) {
-      console.error('Error al crear insumo:', error);
-      alert('Error al crear el insumo');
+      console.error("Error al crear insumo:", error);
+      alert("Error al crear el insumo");
     } finally {
       setSubmitting(false);
     }
@@ -101,33 +105,46 @@ function InsumosPage() {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/api/insumos/${restockData.insumoId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          cantidadDisponible: insumos.find(i => i._id === restockData.insumoId).cantidadDisponible + Number(restockData.cantidadAAgregar)
-        })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/insumos/${restockData.insumoId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            cantidadDisponible:
+              insumos.find((i) => i._id === restockData.insumoId)
+                .cantidadDisponible + Number(restockData.cantidadAAgregar),
+          }),
+        }
+      );
 
       if (response.ok) {
         const updatedInsumo = await response.json();
-        setInsumos(prev => prev.map(insumo => 
-          insumo._id === restockData.insumoId ? updatedInsumo : insumo
-        ));
-        
-        const insumoNombre = insumos.find(i => i._id === restockData.insumoId)?.nombre;
-        alert(`Se agregaron ${restockData.cantidadAAgregar} unidades a "${insumoNombre}"`);
+        setInsumos((prev) =>
+          prev.map((insumo) =>
+            insumo._id === restockData.insumoId ? updatedInsumo : insumo
+          )
+        );
+
+        const insumoNombre = insumos.find(
+          (i) => i._id === restockData.insumoId
+        )?.nombre;
+        alert(
+          `Se agregaron ${restockData.cantidadAAgregar} unidades a "${insumoNombre}"`
+        );
         resetRestockForm();
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.message || 'No se pudo reabastecer el insumo'));
+        alert(
+          "Error: " + (error.message || "No se pudo reabastecer el insumo")
+        );
       }
     } catch (error) {
-      console.error('Error al reabastecer insumo:', error);
-      alert('Error al reabastecer el insumo');
+      console.error("Error al reabastecer insumo:", error);
+      alert("Error al reabastecer el insumo");
     } finally {
       setSubmitting(false);
     }
@@ -135,19 +152,19 @@ function InsumosPage() {
 
   const resetForm = () => {
     setFormData({
-      nombre: '',
-      descripcion: '',
-      cantidadDisponible: '',
-      unidadMedida: '',
-      precioUnitario: ''
+      nombre: "",
+      descripcion: "",
+      cantidadDisponible: "",
+      unidadMedida: "",
+      precioUnitario: "",
     });
     setShowForm(false);
   };
 
   const resetRestockForm = () => {
     setRestockData({
-      insumoId: '',
-      cantidadAAgregar: ''
+      insumoId: "",
+      cantidadAAgregar: "",
     });
     setShowRestockForm(false);
   };
@@ -164,7 +181,9 @@ function InsumosPage() {
     <div className="min-h-screen bg-pastel-mint p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h1 className="text-3xl font-bold text-pastel-primary">Gestión de Insumos</h1>
+          <h1 className="text-3xl font-bold text-pastel-primary">
+            Gestión de Insumos
+          </h1>
           <div className="flex gap-3">
             <button
               onClick={() => {
@@ -173,7 +192,7 @@ function InsumosPage() {
               }}
               className="btn-pastel-success px-4 py-2 rounded-lg font-semibold transition-pastel"
             >
-              {showRestockForm ? 'Cancelar' : 'Reabastecer'}
+              {showRestockForm ? "Cancelar" : "Reabastecer"}
             </button>
             <button
               onClick={() => {
@@ -182,7 +201,7 @@ function InsumosPage() {
               }}
               className="btn-pastel-primary px-4 py-2 rounded-lg font-semibold transition-pastel"
             >
-              {showForm ? 'Cancelar' : 'Nuevo Insumo'}
+              {showForm ? "Cancelar" : "Nuevo Insumo"}
             </button>
           </div>
         </div>
@@ -190,10 +209,17 @@ function InsumosPage() {
         {/* Formulario para reabastecer insumos */}
         {showRestockForm && (
           <div className="card-pastel p-6 rounded-lg mb-8 bg-pastel-green border border-pastel-green-dark">
-            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Reabastecer Insumo Existente</h2>
-            <form onSubmit={handleRestock} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">
+              Reabastecer Insumo Existente
+            </h2>
+            <form
+              onSubmit={handleRestock}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Seleccionar Insumo *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Seleccionar Insumo *
+                </label>
                 <select
                   name="insumoId"
                   value={restockData.insumoId}
@@ -204,16 +230,19 @@ function InsumosPage() {
                   <option value="">Seleccionar insumo...</option>
                   {insumos
                     .sort((a, b) => a.nombre.localeCompare(b.nombre))
-                    .map(insumo => (
-                    <option key={insumo._id} value={insumo._id}>
-                      {insumo.nombre} (Actual: {insumo.cantidadDisponible} {insumo.unidadMedida})
-                    </option>
-                  ))}
+                    .map((insumo) => (
+                      <option key={insumo._id} value={insumo._id}>
+                        {insumo.nombre} (Actual: {insumo.cantidadDisponible}{" "}
+                        {insumo.unidadMedida})
+                      </option>
+                    ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Cantidad a Agregar *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Cantidad a Agregar *
+                </label>
                 <input
                   type="number"
                   name="cantidadAAgregar"
@@ -232,7 +261,7 @@ function InsumosPage() {
                   disabled={submitting}
                   className="btn-pastel-success px-6 py-2 rounded font-semibold transition-pastel disabled:opacity-50"
                 >
-                  {submitting ? 'Reabasteciendo...' : 'Reabastecer'}
+                  {submitting ? "Reabasteciendo..." : "Reabastecer"}
                 </button>
                 <button
                   type="button"
@@ -249,10 +278,17 @@ function InsumosPage() {
         {/* Formulario para agregar nuevo insumo */}
         {showForm && (
           <div className="card-pastel p-6 rounded-lg mb-8 bg-pastel-blue border border-pastel-blue-dark">
-            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Agregar Nuevo Insumo</h2>
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-xl font-semibold mb-4 text-pastel-primary">
+              Agregar Nuevo Insumo
+            </h2>
+            <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Nombre *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Nombre *
+                </label>
                 <input
                   type="text"
                   name="nombre"
@@ -265,7 +301,9 @@ function InsumosPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Unidad de Medida *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Unidad de Medida *
+                </label>
                 <select
                   name="unidadMedida"
                   value={formData.unidadMedida}
@@ -285,7 +323,9 @@ function InsumosPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Cantidad Inicial *</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Cantidad Inicial *
+                </label>
                 <input
                   type="number"
                   name="cantidadDisponible"
@@ -299,7 +339,9 @@ function InsumosPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Precio Unitario (opcional)</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Precio Unitario (opcional)
+                </label>
                 <input
                   type="number"
                   name="precioUnitario"
@@ -313,7 +355,9 @@ function InsumosPage() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2 text-pastel-primary">Descripción</label>
+                <label className="block text-sm font-medium mb-2 text-pastel-primary">
+                  Descripción
+                </label>
                 <textarea
                   name="descripcion"
                   value={formData.descripcion}
@@ -330,7 +374,7 @@ function InsumosPage() {
                   disabled={submitting}
                   className="btn-pastel-primary px-6 py-2 rounded font-semibold transition-pastel disabled:opacity-50"
                 >
-                  {submitting ? 'Creando...' : 'Crear Insumo'}
+                  {submitting ? "Creando..." : "Crear Insumo"}
                 </button>
                 <button
                   type="button"
@@ -347,7 +391,9 @@ function InsumosPage() {
         {/* Lista de insumos */}
         {insumos.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl text-pastel-secondary">No hay insumos registrados</p>
+            <p className="text-xl text-pastel-secondary">
+              No hay insumos registrados
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -355,32 +401,40 @@ function InsumosPage() {
               <div
                 key={insumo._id}
                 className={`card-pastel p-6 rounded-lg border-l-4 ${
-                  insumo.cantidadDisponible === 0 
-                    ? 'border-red-400 bg-pastel-pink' 
-                    : insumo.cantidadDisponible <= 5 
-                    ? 'border-yellow-400 bg-pastel-yellow' 
-                    : 'border-green-400 bg-pastel-green'
+                  insumo.cantidadDisponible === 0
+                    ? "border-red-400 bg-pastel-pink"
+                    : insumo.cantidadDisponible <= 5
+                    ? "border-yellow-400 bg-pastel-yellow"
+                    : "border-green-400 bg-pastel-green"
                 }`}
               >
                 <h3 className="text-xl font-semibold mb-3 text-pastel-primary">
                   {insumo.nombre}
                 </h3>
-                
+
                 <div className="space-y-2 text-pastel-secondary">
-                  <p><strong>Descripción:</strong> {insumo.descripcion || 'Sin descripción'}</p>
-                  <p><strong>Cantidad disponible:</strong> 
-                    <span className={`ml-2 font-bold ${
-                      insumo.cantidadDisponible === 0 
-                        ? 'text-red-600' 
-                        : insumo.cantidadDisponible <= 5 
-                        ? 'text-yellow-600' 
-                        : 'text-green-600'
-                    }`}>
+                  <p>
+                    <strong>Descripción:</strong>{" "}
+                    {insumo.descripcion || "Sin descripción"}
+                  </p>
+                  <p>
+                    <strong>Cantidad disponible:</strong>
+                    <span
+                      className={`ml-2 font-bold ${
+                        insumo.cantidadDisponible === 0
+                          ? "text-red-600"
+                          : insumo.cantidadDisponible <= 5
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                      }`}
+                    >
                       {insumo.cantidadDisponible} {insumo.unidadMedida}
                     </span>
                   </p>
                   {insumo.precioUnitario > 0 && (
-                    <p><strong>Precio unitario:</strong> ${insumo.precioUnitario}</p>
+                    <p>
+                      <strong>Precio unitario:</strong> ${insumo.precioUnitario}
+                    </p>
                   )}
                   <p className="text-sm text-pastel-muted">
                     <strong>Registrado por:</strong> {insumo.user?.username}
@@ -404,11 +458,14 @@ function InsumosPage() {
                       </span>
                     )}
                   </div>
-                  
+
                   {/* Botón rápido para reabastecer */}
                   <button
                     onClick={() => {
-                      setRestockData({ insumoId: insumo._id, cantidadAAgregar: '' });
+                      setRestockData({
+                        insumoId: insumo._id,
+                        cantidadAAgregar: "",
+                      });
                       setShowRestockForm(true);
                       setShowForm(false);
                     }}
@@ -425,36 +482,45 @@ function InsumosPage() {
 
         {/* Resumen general */}
         <div className="mt-8 card-pastel p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4 text-pastel-primary">Resumen del Inventario</h2>
+          <h2 className="text-xl font-semibold mb-4 text-pastel-primary">
+            Resumen del Inventario
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="bg-pastel-green p-4 rounded">
               <p className="text-2xl font-bold text-green-700">
-                {insumos.filter(i => i.cantidadDisponible > 5).length}
+                {insumos.filter((i) => i.cantidadDisponible > 5).length}
               </p>
               <p className="text-pastel-secondary">Insumos disponibles</p>
             </div>
             <div className="bg-pastel-yellow p-4 rounded">
               <p className="text-2xl font-bold text-yellow-700">
-                {insumos.filter(i => i.cantidadDisponible <= 5 && i.cantidadDisponible > 0).length}
+                {
+                  insumos.filter(
+                    (i) => i.cantidadDisponible <= 5 && i.cantidadDisponible > 0
+                  ).length
+                }
               </p>
               <p className="text-pastel-secondary">Stock bajo (≤5 unidades)</p>
             </div>
             <div className="bg-pastel-pink p-4 rounded">
               <p className="text-2xl font-bold text-red-700">
-                {insumos.filter(i => i.cantidadDisponible === 0).length}
+                {insumos.filter((i) => i.cantidadDisponible === 0).length}
               </p>
               <p className="text-pastel-secondary">Agotados</p>
             </div>
           </div>
-          
+
           {/* Explicación del criterio de stock bajo */}
           <div className="mt-4 p-4 bg-pastel-blue rounded">
             <p className="text-sm text-pastel-secondary">
-              <strong>Criterio de Stock Bajo:</strong> Insumos con 5 unidades o menos se consideran en stock bajo. 
-              Esto te permite reabastecerte antes de quedarte sin existencias.
+              <strong>Criterio de Stock Bajo:</strong> Insumos con 5 unidades o
+              menos se consideran en stock bajo. Esto te permite reabastecerte
+              antes de quedarte sin existencias.
             </p>
             <p className="text-sm text-pastel-secondary mt-2">
-              <strong>Funcionalidades:</strong> Usa "Nuevo Insumo" para agregar productos nuevos y "Reabastecer" para añadir stock a productos existentes.
+              <strong>Funcionalidades:</strong> Usa "Nuevo Insumo" para agregar
+              productos nuevos y "Reabastecer" para añadir stock a productos
+              existentes.
             </p>
           </div>
         </div>

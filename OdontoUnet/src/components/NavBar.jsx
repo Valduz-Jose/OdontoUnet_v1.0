@@ -4,19 +4,11 @@ import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun, Users } from "lucide-react";
 
 const AppLogo = () => (
-  <Link to="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-    <img
-      src="/logounet1.png"
-      alt="Logo OdontoUNET"
-      className="h-8 w-auto" // Ajusta la altura aquí (h-8 = 32px)
-    />
-    <Link
-      to="/"
-      className="text-2xl font-bold tracking-wide text-pastel-primary hover:text-blue-600 transition-colors"
-      title="Ir al inicio"
-    >
+  <Link to="/" className="flex items-center space-x-2" title="Ir al inicio">
+    <img src="/logounet1.png" className="h-10" alt="UNET Logo" />
+    <span className="text-2xl font-bold tracking-wide text-pastel-primary hover:text-blue-600 transition-colors">
       Sistema Odontológico
-    </Link>
+    </span>
   </Link>
 );
 

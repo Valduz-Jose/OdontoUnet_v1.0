@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Upload, Trash2, Eye, Image as ImageIcon } from "lucide-react";
+import { API_BASE_URL, getImageUrl } from "../api/config";
 
 function CarouselAdminPage() {
   const [images, setImages] = useState([]);
@@ -14,7 +15,7 @@ function CarouselAdminPage() {
 
   const fetchImages = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/carousel", {
+      const response = await fetch(`${API_BASE_URL}/api/carousel`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -52,7 +53,7 @@ function CarouselAdminPage() {
         formData.append("images", file);
       });
 
-      const response = await fetch("http://localhost:3000/api/carousel", {
+      const response = await fetch(`${API_BASE_URL}/api/carousel`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -86,13 +87,10 @@ function CarouselAdminPage() {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/carousel/${imageId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/carousel/${imageId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       if (response.ok) {
         setImages((prev) => prev.filter((img) => img._id !== imageId));
@@ -225,7 +223,7 @@ function CarouselAdminPage() {
                 >
                   <div className="relative group">
                     <img
-                      src={`http://localhost:3000/uploads/carousel/${image.filename}`}
+                      src={`${API_BASE_URL}/uploads/carousel/${image.filename}`}
                       alt={image.originalName}
                       className="w-full h-48 object-cover"
                     />
@@ -235,7 +233,7 @@ function CarouselAdminPage() {
                       <button
                         onClick={() =>
                           window.open(
-                            `http://localhost:3000/uploads/carousel/${image.filename}`,
+                            `${API_BASE_URL}/uploads/carousel/${image.filename}`,
                             "_blank"
                           )
                         }

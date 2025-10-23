@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Env files
+.env
+.env.*.local
+
+# MANTENER estos para que Vercel los lea:
+!.env.production
+!.env.local

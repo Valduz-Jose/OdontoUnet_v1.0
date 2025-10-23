@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { handleTimeChange, validateTimeRange } from "../utils/timeHelpers";
 import { DIAS_SEMANA_VALUES, SPECIALTIES } from "../utils/constants";
+import { API_BASE_URL, getImageUrl } from "../api/config";
 
 function ProfilePage() {
   const { user } = useAuth();
@@ -50,7 +51,7 @@ function ProfilePage() {
         return;
       }
       try {
-        const response = await fetch("http://localhost:3000/api/profile", {
+        const response = await fetch(`${API_BASE_URL}/api/profile`, {
           credentials: "include",
         });
         if (response.ok) {
@@ -167,7 +168,7 @@ function ProfilePage() {
         }
       }
 
-      const response = await fetch("http://localhost:3000/api/profile", {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         method: "PUT",
         body: formData,
         credentials: "include",
@@ -409,7 +410,7 @@ function ProfilePage() {
                     src={
                       preview ||
                       (profileData.foto
-                        ? `http://localhost:3000/uploads/profiles/${profileData.foto}`
+                        ? `${API_BASE_URL}/uploads/profiles/${profileData.foto}`
                         : null)
                     }
                     alt="Foto de perfil"
@@ -430,7 +431,7 @@ function ProfilePage() {
                 <>
                   {profileData.foto ? (
                     <img
-                      src={`http://localhost:3000/uploads/profiles/${profileData.foto}`}
+                      src={`${API_BASE_URL}/uploads/profiles/${profileData.foto}`}
                       alt="Foto de perfil"
                       className="w-full h-full object-cover"
                     />
